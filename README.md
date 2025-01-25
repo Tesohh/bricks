@@ -40,6 +40,7 @@ Project structure is similar to what you might find in a go or cargo project:
 project/
     src/
         main.c
+        test.c
         utils/
             utils.h
             math.c
@@ -52,8 +53,9 @@ project/
     ...
 ```
 
-in this case `utils` and `game` are packages inside the project.
+- in this case `utils` and `game` are packages inside the project.
+    - it should only have 1 header, with the same name as the directory
+    - then all .c files inside will implement that header.
 
-it should only have 1 header, with the same name as the directory
-
-then all .c files inside will implement that header.
+- as for testing, it is all managed by `test.c`. 
+    - Perhaps, I will create a testing framework for `bricks`, but that's beyond my scope for now.

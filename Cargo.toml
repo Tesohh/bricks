@@ -1,0 +1,11 @@
+[package]
+name = "bricks"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.27", features = ["derive"] }
+clap_derive = { version = "4.0.0-rc.1" }
+git2 = "0.20.0"
+serde = { version = "1.0.217", features = ["derive"] }
+toml = "0.8.19"

@@ -1,10 +1,8 @@
-use std::{env, fs};
-
 use anyhow::Result;
 use rayon::iter::{ParallelBridge, ParallelIterator};
 use walkdir::DirEntry;
 
-use crate::config::Config;
+use crate::{cli::args::BuildCommand, config::Config};
 
 pub fn compile(file: walkdir::Result<DirEntry>) -> Result<()> {
     let file = file?;
@@ -24,7 +22,7 @@ pub fn compile(file: walkdir::Result<DirEntry>) -> Result<()> {
     Ok(())
 }
 
-pub fn build(config: Config) -> Result<()> {
+pub fn build(_config: Config, _build_command: BuildCommand) -> Result<()> {
     walkdir::WalkDir::new(".")
         .follow_links(true)
         .into_iter()

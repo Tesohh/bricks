@@ -33,8 +33,8 @@ fn _main() -> Result<()> {
     );
 
     match args.sub {
-        SubCommand::Build(build_command) => build::build(config),
-        SubCommand::Run(run_command) => todo!(),
+        SubCommand::Build(build_command) => build::build(config, build_command),
+        SubCommand::Run(_run_command) => todo!(),
         SubCommand::Install => todo!(),
         SubCommand::Clean => todo!(),
     }?;

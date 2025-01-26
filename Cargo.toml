@@ -1,9 +1,12 @@
 [package]
 name = "bricks"
+authors = ["Tesohh <github.com/Tesohh>"]
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anstyle = "1.0.10"
+anstyle-owo-colors = "2.0.3"
 anyhow = "1.0.95"
 clap = { version = "4.5.27", features = ["derive"] }
 clap_derive = { version = "4.0.0-rc.1" }

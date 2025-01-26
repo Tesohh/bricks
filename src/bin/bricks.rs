@@ -1,14 +1,12 @@
-use std::{env, fs};
+use std::fs;
 
-use anyhow::{bail, Result};
+use anyhow::Result;
 use bricks::{
     cli::{args::Args, pretty},
     config::Config,
 };
 use clap::Parser;
 use owo_colors::OwoColorize;
-
-// TODO: get the file from clap args
 
 fn _main() -> Result<()> {
     let args = Args::parse();

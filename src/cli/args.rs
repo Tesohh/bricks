@@ -7,8 +7,12 @@ use clap_derive::{Args, Subcommand};
 pub enum SubCommand {
     /// Build an executable or dynamic library
     Build(BuildCommand),
+
     /// Build and run the binary directly
     Run(RunCommand),
+
+    /// Cleans the build directory
+    Clean,
 }
 
 #[derive(Debug, Args)]
@@ -21,6 +25,7 @@ pub struct RunCommand {}
 #[clap(author, version, about)]
 #[command(name = "bricks")]
 #[command(bin_name = "bricks")]
+#[command(styles = CLAP_STYLING)]
 pub struct Args {
     #[clap(subcommand)]
     pub sub: SubCommand,
@@ -34,3 +39,24 @@ pub struct Args {
     )]
     pub config: PathBuf,
 }
+
+pub const CLAP_STYLING: clap::builder::styling::Styles = clap::builder::styling::Styles::styled()
+    .header(
+        anstyle::Style::new()
+            .bold()
+            .fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::Magenta))),
+    )
+    .usage(
+        anstyle::Style::new()
+            .bold()
+            .fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::Magenta))),
+    )
+    .literal(
+        anstyle::Style::new()
+            .bold()
+            .fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::Blue))),
+    );
+// .placeholder(clap_cargo::style::PLACEHOLDER)
+// .error(clap_cargo::style::ERROR)
+// .valid(clap_cargo::style::VALID)
+// .invalid(clap_cargo::style::INVALID);

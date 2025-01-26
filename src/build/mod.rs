@@ -1,36 +1,35 @@
+pub mod compile;
+
 use anyhow::Result;
-use rayon::iter::{ParallelBridge, ParallelIterator};
-use walkdir::DirEntry;
 
-use crate::{
-    cli::{args::BuildCommand, pretty},
-    config::Config,
-};
+use crate::{cli::args::BuildCommand, config::Config};
 
-pub fn compile(file: walkdir::Result<DirEntry>) -> Result<()> {
-    let file = file?;
-
-    if file.file_type().is_dir() {
-        return Ok(());
+pub fn build(_config: Config, _build_command: BuildCommand) -> Result<()> {
+    for entry in walkdir::WalkDir::new("./src").follow_links(true) {
+        compile::compile(entry)?;
     }
-
-    let file_name = file.path().to_string_lossy();
-    if !file_name.to_string().ends_with(".c") {
-        return Ok(());
-    };
-
-    pretty::msg("compiling", &file_name);
-    // compile through the CC...
 
     Ok(())
 }
 
-pub fn build(_config: Config, _build_command: BuildCommand) -> Result<()> {
-    walkdir::WalkDir::new(".")
-        .follow_links(true)
-        .into_iter()
-        .par_bridge()
-        .for_each(|file| compile(file).unwrap());
+#[cfg(test)]
+mod tests {
+    use crate::build::compile::src_to_build_path;
+    use std::path::Path;
 
-    Ok(())
+    #[test]
+    fn check_src_to_build_path() {
+        assert_eq!(
+            src_to_build_path(Path::new("./src/main.c")),
+            Path::new("./build/main.o")
+        );
+        assert_eq!(
+            src_to_build_path(Path::new("./src/utils/crazy/main.c")),
+            Path::new("./build/utils/crazy/main.o")
+        );
+        assert_eq!(
+            src_to_build_path(Path::new("./main.c")),
+            Path::new("./main.o")
+        );
+    }
 }

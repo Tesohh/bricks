@@ -13,5 +13,11 @@ use serde::{Deserialize, Serialize};
 pub struct Config {
     pub brick: Brick,
     pub packages: Option<Packages>,
+
+    #[serde(default = "libs_default")]
     pub libs: HashMap<String, Lib>,
+}
+
+fn libs_default() -> HashMap<String, Lib> {
+    HashMap::new()
 }

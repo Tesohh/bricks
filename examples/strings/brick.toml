@@ -1,0 +1,6 @@
+[brick]
+name = "strings"
+kind = "library"
+lang = "c"
+edition = "c99"
+

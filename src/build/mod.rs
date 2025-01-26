@@ -25,7 +25,10 @@ pub fn build(config: Config, _build_command: BuildCommand) -> Result<Option<Path
             &compile_paths,
             &Path::new("./build").join(config.brick.name),
         ),
-        BrickKind::Library => todo!(),
+        BrickKind::Library => link::library(
+            &compile_paths,
+            &Path::new("./build").join(String::from("lib") + &config.brick.name + ".a"),
+        ),
     }
 }
 

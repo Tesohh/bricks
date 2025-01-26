@@ -2,7 +2,10 @@ use anyhow::Result;
 use rayon::iter::{ParallelBridge, ParallelIterator};
 use walkdir::DirEntry;
 
-use crate::{cli::args::BuildCommand, config::Config};
+use crate::{
+    cli::{args::BuildCommand, pretty},
+    config::Config,
+};
 
 pub fn compile(file: walkdir::Result<DirEntry>) -> Result<()> {
     let file = file?;
@@ -16,7 +19,7 @@ pub fn compile(file: walkdir::Result<DirEntry>) -> Result<()> {
         return Ok(());
     };
 
-    dbg!(file_name);
+    pretty::msg("compiling", &file_name);
     // compile through the CC...
 
     Ok(())

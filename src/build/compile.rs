@@ -7,7 +7,7 @@ use std::{
 use anyhow::{bail, Result};
 use walkdir::DirEntry;
 
-use crate::cli::pretty;
+use crate::{cli::pretty, config::Config};
 
 pub fn src_to_build_path(path: &Path) -> PathBuf {
     let mut new_path = PathBuf::new();
@@ -28,7 +28,7 @@ pub fn src_to_build_path(path: &Path) -> PathBuf {
 }
 
 /// Compiles a file through `cc` and returns where it was compiled to
-pub fn compile(file: walkdir::Result<DirEntry>) -> Result<Option<PathBuf>> {
+pub fn compile(config: &Config, file: walkdir::Result<DirEntry>) -> Result<Option<PathBuf>> {
     let file = file?;
 
     if file.file_type().is_dir() {
@@ -51,6 +51,7 @@ pub fn compile(file: walkdir::Result<DirEntry>) -> Result<Option<PathBuf>> {
     fs::create_dir_all(parent)?;
 
     let output = Command::new("cc")
+        .arg(String::from("-std=") + &config.brick.edition)
         .arg("-c")
         .arg(file.path())
         .arg("-o")

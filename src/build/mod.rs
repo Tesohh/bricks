@@ -14,7 +14,7 @@ pub fn build(config: Config, _build_command: BuildCommand) -> Result<Option<Path
     let mut compile_paths = vec![];
 
     for entry in walkdir::WalkDir::new("./src").follow_links(true) {
-        let Some(path) = compile::compile(entry)? else {
+        let Some(path) = compile::compile(&config, entry)? else {
             continue;
         };
         compile_paths.push(path);

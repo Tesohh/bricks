@@ -1,5 +1,5 @@
 # bricks
-hyper opinionated build system and package manager for C/C++
+build system and package manager for C/C++
 
 ## Why?
 I would like to make more stuff in C, but I hate the tooling around it.. so I wanted to make my own

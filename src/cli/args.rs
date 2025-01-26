@@ -11,6 +11,9 @@ pub enum SubCommand {
     /// Build and run the binary directly
     Run(RunCommand),
 
+    /// Install required libraries
+    Install,
+
     /// Cleans the build directory
     Clean,
 }

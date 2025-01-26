@@ -2,7 +2,11 @@ use std::fs;
 
 use anyhow::Result;
 use bricks::{
-    cli::{args::Args, pretty},
+    build,
+    cli::{
+        args::{Args, SubCommand},
+        pretty,
+    },
     config::Config,
 };
 use clap::Parser;
@@ -27,6 +31,14 @@ fn _main() -> Result<()> {
             .dimmed()
         ),
     );
+
+    match args.sub {
+        SubCommand::Build(build_command) => build::build(config),
+        SubCommand::Run(run_command) => todo!(),
+        SubCommand::Install => todo!(),
+        SubCommand::Clean => todo!(),
+    }?;
+
     Ok(())
 }
 

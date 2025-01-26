@@ -26,12 +26,10 @@ I'm making this mostly for myself, but if other libraries use it, that would be 
             - add headers defined in config to `.clangd` file
 
 ## Build system
-- as for building itself, i still need to decide whether 
-    - to do the building through bricks,
-    - or to generate a `Makefile`
-        - to improve compatibility
-        - and allow people that don't have `bricks` installed to build your project
-        - (provided they have the libraries)
+- Building works like any other build system.
+    - compile all .c files
+    - link them if binary,
+    - `ar` them if library
 
 ## Project structure
 Project structure is similar to what you might find in a go or cargo project:

@@ -1,15 +1,32 @@
 pub mod compile;
+pub mod link;
+
+use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 
-use crate::{cli::args::BuildCommand, config::Config};
+use crate::{
+    cli::args::BuildCommand,
+    config::{brick::BrickKind, Config},
+};
 
-pub fn build(_config: Config, _build_command: BuildCommand) -> Result<()> {
+pub fn build(config: Config, _build_command: BuildCommand) -> Result<Option<PathBuf>> {
+    let mut compile_paths = vec![];
+
     for entry in walkdir::WalkDir::new("./src").follow_links(true) {
-        compile::compile(entry)?;
+        let Some(path) = compile::compile(entry)? else {
+            continue;
+        };
+        compile_paths.push(path);
     }
 
-    Ok(())
+    match config.brick.kind {
+        BrickKind::Binary => link::binary(
+            &compile_paths,
+            &Path::new("./build").join(config.brick.name),
+        ),
+        BrickKind::Library => todo!(),
+    }
 }
 
 #[cfg(test)]

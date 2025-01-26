@@ -27,16 +27,17 @@ pub fn src_to_build_path(path: &Path) -> PathBuf {
     new_path
 }
 
-pub fn compile(file: walkdir::Result<DirEntry>) -> Result<()> {
+/// Compiles a file through `cc` and returns where it was compiled to
+pub fn compile(file: walkdir::Result<DirEntry>) -> Result<Option<PathBuf>> {
     let file = file?;
 
     if file.file_type().is_dir() {
-        return Ok(());
+        return Ok(None);
     }
 
     let src_path = file.path().to_string_lossy();
     if !src_path.to_string().ends_with(".c") {
-        return Ok(());
+        return Ok(None);
     };
 
     pretty::msg("compiling", &src_path);
@@ -53,7 +54,7 @@ pub fn compile(file: walkdir::Result<DirEntry>) -> Result<()> {
         .arg("-c")
         .arg(file.path())
         .arg("-o")
-        .arg(build_path)
+        .arg(&build_path)
         .stderr(Stdio::inherit())
         .output()?;
 
@@ -64,5 +65,5 @@ pub fn compile(file: walkdir::Result<DirEntry>) -> Result<()> {
         );
     }
 
-    Ok(())
+    Ok(Some(build_path))
 }

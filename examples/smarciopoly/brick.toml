@@ -1,0 +1,22 @@
+[brick]
+name = "smarciopoly"
+kind = "binary"
+lang = "c"
+edition = "c99"
+
+[packages]
+list = ["utils"]
+
+[libs.raylib] # this library simply comes as -lraylib
+src = "system"
+
+[libs.strings] # this library uses bricks
+src = "web:github.com/Tesohh/strings"
+version = "latest"
+
+[libs.slices] # example of a library that doesn't use bricks
+src = "web:github.com/Tesohh/vectors"
+version = "b46ca7f"
+build = "make"
+headers = ["slices.h"]
+objects = ["slices.o"]

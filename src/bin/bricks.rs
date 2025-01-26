@@ -1,6 +1,8 @@
-use bricks::config::Config;
+use anyhow::Result;
+use bricks::{config::Config, pretty};
+use owo_colors::OwoColorize;
 
-fn main() {
+fn _main() -> Result<()> {
     let toml_str = r#"
 [brick]
 name = "smarciopoly"
@@ -26,6 +28,26 @@ headers = ["slices.h"]
 objects = ["slices.o"]
 "#;
 
-    let config: Config = toml::from_str(toml_str).unwrap();
-    println!("{:#?}", config);
+    let config: Config = toml::from_str(toml_str)?;
+    pretty::msg(
+        "brick",
+        format!(
+            "{} {}",
+            config.brick.name,
+            format!(
+                "({}, {}, {})",
+                config.brick.kind, config.brick.lang, config.brick.edition
+            )
+            .dimmed()
+        ),
+    );
+    Ok(())
+}
+
+fn main() {
+    let result = _main();
+    match result {
+        Ok(_) => {}
+        Err(err) => pretty::error(err),
+    }
 }

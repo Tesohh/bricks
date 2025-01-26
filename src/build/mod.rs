@@ -20,12 +20,15 @@ pub fn build(config: Config, _build_command: BuildCommand) -> Result<Option<Path
         compile_paths.push(path);
     }
 
+    // TODO: Instead of passing the whole config, just pass the compiler / archiver
     match config.brick.kind {
         BrickKind::Binary => link::binary(
+            &config,
             &compile_paths,
-            &Path::new("./build").join(config.brick.name),
+            &Path::new("./build").join(&config.brick.name),
         ),
         BrickKind::Library => link::library(
+            &config,
             &compile_paths,
             &Path::new("./build").join(String::from("lib") + &config.brick.name + ".a"),
         ),

@@ -50,7 +50,8 @@ pub fn compile(config: &Config, file: walkdir::Result<DirEntry>) -> Result<Optio
 
     fs::create_dir_all(parent)?;
 
-    let output = Command::new("cc")
+    // TODO: Use platform specific compiler or switch to using env vars
+    let output = Command::new(&config.compiler.mac)
         .arg(String::from("-std=") + &config.brick.edition)
         .arg("-c")
         .arg(file.path())

@@ -1,18 +1,20 @@
 pub mod brick;
+pub mod compiler;
 pub mod lib;
-pub mod packages;
 
 use std::collections::HashMap;
 
 use brick::Brick;
+use compiler::Compiler;
 use lib::Lib;
-use packages::Packages;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     pub brick: Brick,
-    pub packages: Option<Packages>,
+
+    #[serde(default)]
+    pub compiler: Compiler,
 
     #[serde(default = "libs_default")]
     pub libs: HashMap<String, Lib>,

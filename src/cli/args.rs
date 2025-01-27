@@ -5,11 +5,14 @@ use clap_derive::{Args, Subcommand};
 
 #[derive(Debug, Subcommand)]
 pub enum SubCommand {
-    /// Build an executable or dynamic library
+    /// Build an executable or library
     Build(BuildCommand),
 
     /// Build and run the binary directly
     Run(RunCommand),
+
+    /// Initialize new project
+    Init(InitCommand),
 
     /// Install required libraries
     Install,
@@ -24,11 +27,24 @@ pub struct BuildCommand {}
 #[derive(Debug, Args)]
 pub struct RunCommand {}
 
+#[derive(Debug, Args)]
+pub struct InitCommand {
+    pub name: String,
+
+    #[arg(long, required = false)]
+    pub cpp: bool,
+
+    #[arg(long, required = false)]
+    /// Sets this project as lib
+    pub lib: bool,
+}
+
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
 #[command(name = "bricks")]
 #[command(bin_name = "bricks")]
 #[command(styles = CLAP_STYLING)]
+/// Gissy
 pub struct Args {
     #[clap(subcommand)]
     pub sub: SubCommand,

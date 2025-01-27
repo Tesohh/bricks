@@ -42,17 +42,6 @@ pub fn compile(config: &Config, file: walkdir::Result<DirEntry>) -> Result<Optio
 
     let build_path = src_to_build_path(file.path());
 
-    // let src_metadata = fs::metadata(file.path());
-    // let build_metadata = fs::metadata(&build_path);
-    // let mut skip = false;
-    //
-    // if src_metadata.is_err() || build_metadata.is_err() {
-    //     skip = true
-    // } else {
-    //     let src_metadata = src_metadata.unwrap();
-    //     let build_metadata = build_metadata.unwrap();
-    // }
-
     let src_metadata = fs::metadata(file.path());
     let build_metadata = fs::metadata(&build_path);
 

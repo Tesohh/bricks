@@ -8,6 +8,7 @@ use bricks::{
         pretty,
     },
     config::Config,
+    run,
 };
 use clap::Parser;
 use owo_colors::OwoColorize;
@@ -33,8 +34,11 @@ fn _main() -> Result<()> {
     );
 
     match args.sub {
-        SubCommand::Build(build_command) => build::build(config, build_command),
-        SubCommand::Run(_run_command) => todo!(),
+        SubCommand::Build(build_command) => match build::build(config, build_command) {
+            Ok(_) => Ok(()),
+            Err(err) => Err(err),
+        },
+        SubCommand::Run(run_command) => run::run(config, run_command),
         SubCommand::Install => todo!(),
         SubCommand::Clean => todo!(),
     }?;

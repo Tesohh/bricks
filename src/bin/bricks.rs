@@ -2,7 +2,7 @@ use std::fs;
 
 use anyhow::Result;
 use bricks::{
-    build,
+    build, clean,
     cli::{
         args::{Args, SubCommand},
         pretty,
@@ -40,7 +40,7 @@ fn _main() -> Result<()> {
         },
         SubCommand::Run(run_command) => run::run(config, run_command),
         SubCommand::Install => todo!(),
-        SubCommand::Clean => todo!(),
+        SubCommand::Clean => clean::clean(config),
     }?;
 
     Ok(())

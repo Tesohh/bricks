@@ -9,6 +9,8 @@ use walkdir::DirEntry;
 
 use crate::{cli::pretty, config::Config};
 
+use super::tools::get_compiler;
+
 pub fn src_to_build_path(path: &Path) -> PathBuf {
     let mut new_path = PathBuf::new();
     for component in path.components() {
@@ -42,7 +44,7 @@ pub fn compile(config: &Config, file: walkdir::Result<DirEntry>) -> Result<Optio
 
     let build_path = src_to_build_path(file.path());
 
-    let src_metadata = fs::metadata(file.path());
+    let src_metadata = file.metadata();
     let build_metadata = fs::metadata(&build_path);
 
     let skip = match (src_metadata, build_metadata) {
@@ -68,8 +70,7 @@ pub fn compile(config: &Config, file: walkdir::Result<DirEntry>) -> Result<Optio
 
     fs::create_dir_all(parent)?;
 
-    // TODO: Use platform specific compiler or switch to using env vars
-    let output = Command::new(&config.compiler.mac)
+    let output = Command::new(get_compiler())
         .arg(String::from("-std=") + &config.brick.edition)
         .arg("-c")
         .arg(file.path())

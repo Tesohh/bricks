@@ -1,5 +1,6 @@
 pub mod compile;
 pub mod link;
+pub mod tools;
 
 use std::path::{Path, PathBuf};
 
@@ -23,12 +24,10 @@ pub fn build(config: Config, _build_command: BuildCommand) -> Result<Option<Path
     // TODO: Instead of passing the whole config, just pass the compiler / archiver
     match config.brick.kind {
         BrickKind::Binary => link::binary(
-            &config,
             &compile_paths,
             &Path::new("./build").join(&config.brick.name),
         ),
         BrickKind::Library => link::library(
-            &config,
             &compile_paths,
             &Path::new("./build").join(String::from("lib") + &config.brick.name + ".a"),
         ),

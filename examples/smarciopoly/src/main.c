@@ -2,5 +2,4 @@
 
 int main() {
     add(2, 2);
-    // cissy
 }

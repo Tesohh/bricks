@@ -5,17 +5,14 @@ use std::{
 
 use anyhow::Result;
 
-use crate::{cli::pretty, config::Config};
+use crate::cli::pretty;
 
-pub fn binary(
-    config: &Config,
-    compile_paths: &[PathBuf],
-    target: &Path,
-) -> Result<Option<PathBuf>> {
+use super::tools::{get_archiver, get_compiler};
+
+pub fn binary(compile_paths: &[PathBuf], target: &Path) -> Result<Option<PathBuf>> {
     pretty::msg("linking", target.display());
 
-    // TODO: Use platform specific compiler or switch to using env vars
-    let mut cmd = &mut Command::new(&config.compiler.mac);
+    let mut cmd = &mut Command::new(get_compiler());
     cmd = cmd.stderr(Stdio::inherit()).arg("-o").arg(target);
 
     for path in compile_paths {
@@ -28,14 +25,10 @@ pub fn binary(
     Ok(Some(target.to_path_buf()))
 }
 
-pub fn library(
-    _config: &Config,
-    compile_paths: &[PathBuf],
-    target: &Path,
-) -> Result<Option<PathBuf>> {
+pub fn library(compile_paths: &[PathBuf], target: &Path) -> Result<Option<PathBuf>> {
     pretty::msg("linking", target.display());
 
-    let mut cmd = &mut Command::new("ar");
+    let mut cmd = &mut Command::new(get_archiver());
     cmd = cmd.stderr(Stdio::inherit()).arg("crus").arg(target);
 
     for path in compile_paths {

@@ -35,14 +35,43 @@ pub fn compile(config: &Config, file: walkdir::Result<DirEntry>) -> Result<Optio
         return Ok(None);
     }
 
-    let src_path = file.path().to_string_lossy();
-    if !src_path.to_string().ends_with(".c") {
+    let src_path_name = file.path().to_string_lossy();
+    if !src_path_name.to_string().ends_with(".c") {
         return Ok(None);
     };
 
-    pretty::msg("compiling", &src_path);
-
     let build_path = src_to_build_path(file.path());
+
+    // let src_metadata = fs::metadata(file.path());
+    // let build_metadata = fs::metadata(&build_path);
+    // let mut skip = false;
+    //
+    // if src_metadata.is_err() || build_metadata.is_err() {
+    //     skip = true
+    // } else {
+    //     let src_metadata = src_metadata.unwrap();
+    //     let build_metadata = build_metadata.unwrap();
+    // }
+
+    let src_metadata = fs::metadata(file.path());
+    let build_metadata = fs::metadata(&build_path);
+
+    let skip = match (src_metadata, build_metadata) {
+        (Ok(src_metadata), Ok(build_metadata)) => {
+            match (src_metadata.modified(), build_metadata.modified()) {
+                (Ok(src_modified), Ok(build_modified)) => build_modified >= src_modified,
+                _ => false,
+            }
+        }
+        _ => true,
+    };
+
+    if skip {
+        pretty::msg("skipping", &src_path_name);
+        return Ok(Some(build_path));
+    }
+
+    pretty::msg("compiling", &src_path_name);
 
     let Some(parent) = build_path.parent() else {
         bail!("cannot get parent from build path {}", build_path.display())

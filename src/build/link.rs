@@ -10,7 +10,7 @@ use crate::cli::pretty;
 use super::tools::{get_archiver, get_compiler};
 
 pub fn binary(compile_paths: &[PathBuf], target: &Path) -> Result<Option<PathBuf>> {
-    pretty::msg("linking", target.display());
+    pretty::msg("link", target.display());
 
     let mut cmd = &mut Command::new(get_compiler());
     cmd = cmd.stderr(Stdio::inherit()).arg("-o").arg(target);
@@ -26,7 +26,7 @@ pub fn binary(compile_paths: &[PathBuf], target: &Path) -> Result<Option<PathBuf
 }
 
 pub fn library(compile_paths: &[PathBuf], target: &Path) -> Result<Option<PathBuf>> {
-    pretty::msg("linking", target.display());
+    pretty::msg("link", target.display());
 
     let mut cmd = &mut Command::new(get_archiver());
     cmd = cmd.stderr(Stdio::inherit()).arg("crus").arg(target);

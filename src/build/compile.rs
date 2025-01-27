@@ -54,15 +54,15 @@ pub fn compile(config: &Config, file: walkdir::Result<DirEntry>) -> Result<Optio
                 _ => false,
             }
         }
-        _ => true,
+        _ => false,
     };
 
     if skip {
-        pretty::msg("skipping", &src_path_name);
+        pretty::msg("skip", &src_path_name);
         return Ok(Some(build_path));
     }
 
-    pretty::msg("compiling", &src_path_name);
+    pretty::msg("compile", &src_path_name);
 
     let Some(parent) = build_path.parent() else {
         bail!("cannot get parent from build path {}", build_path.display())

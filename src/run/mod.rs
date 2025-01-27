@@ -21,7 +21,7 @@ pub fn run(config: Config, _run_command: RunCommand) -> Result<()> {
         None => bail!("build path was not returned"),
     };
 
-    pretty::msg("running", build_path.display());
+    pretty::msg("run", build_path.display());
 
     Command::new(build_path).status()?;
 

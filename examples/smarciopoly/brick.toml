@@ -8,15 +8,16 @@ edition = "c99"
 list = ["utils"]
 
 [libs.raylib] # this library simply comes as -lraylib
-src = "system"
+kind = "system"
 
 [libs.strings] # this library uses bricks
-src = "web:github.com/Tesohh/strings"
+kind = "git"
+repo = "https://github.com/Tesohh/strings.git"
 version = "latest"
 
-[libs.slices] # example of a library that doesn't use bricks
-src = "web:github.com/Tesohh/vectors"
-version = "b46ca7f"
-build = "make"
-headers = ["slices.h"]
-objects = ["slices.o"]
+# [libs.slices] # example of a library that doesn't use bricks
+# src = "web:github.com/Tesohh/vectors"
+# version = "b46ca7f"
+# build = "make"
+# headers = ["slices.h"]
+# objects = ["slices.o"]

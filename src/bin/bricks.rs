@@ -6,7 +6,10 @@ use bricks::{
         args::{Args, SubCommand},
         pretty,
     },
-    config::read::read_config,
+    config::{
+        lib::{Lib, LibKind},
+        read::read_config,
+    },
 };
 use clap::Parser;
 

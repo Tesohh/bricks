@@ -30,7 +30,11 @@ pub fn src_to_build_path(path: &Path) -> PathBuf {
 }
 
 /// Compiles a file through `cc` and returns where it was compiled to
-pub fn compile(config: &Config, file: walkdir::Result<DirEntry>) -> Result<Option<PathBuf>> {
+pub fn compile(
+    config: &Config,
+    file: walkdir::Result<DirEntry>,
+    force: bool,
+) -> Result<Option<PathBuf>> {
     let file = file?;
 
     if file.file_type().is_dir() {
@@ -57,7 +61,7 @@ pub fn compile(config: &Config, file: walkdir::Result<DirEntry>) -> Result<Optio
         _ => false,
     };
 
-    if skip {
+    if !force && skip {
         pretty::msg("skip", &src_path_name);
         return Ok(Some(build_path));
     }
@@ -70,14 +74,20 @@ pub fn compile(config: &Config, file: walkdir::Result<DirEntry>) -> Result<Optio
 
     fs::create_dir_all(parent)?;
 
-    let output = Command::new(get_compiler())
+    let mut cmd = &mut Command::new(get_compiler());
+    cmd = cmd
         .arg(String::from("-std=") + &config.brick.edition)
         .arg("-c")
         .arg(file.path())
         .arg("-o")
         .arg(&build_path)
-        .stderr(Stdio::inherit())
-        .output()?;
+        .stderr(Stdio::inherit());
+
+    for (name, lib) in &config.libs {
+        cmd = cmd.args(lib.headers(name)?.split(" "));
+    }
+
+    let output = cmd.output()?;
 
     if !output.status.success() {
         bail!(

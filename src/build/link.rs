@@ -1,31 +1,46 @@
 use std::{
+    collections::HashMap,
     path::{Path, PathBuf},
     process::{Command, Stdio},
 };
 
 use anyhow::Result;
 
-use crate::cli::pretty;
+use crate::{cli::pretty, config::lib::Lib};
 
 use super::tools::{get_archiver, get_compiler};
 
-pub fn binary(compile_paths: &[PathBuf], target: &Path) -> Result<Option<PathBuf>> {
+pub fn binary(
+    libs: HashMap<String, Lib>,
+    compile_paths: &[PathBuf],
+    target: &Path,
+) -> Result<Option<PathBuf>> {
     pretty::msg("link", target.display());
 
     let mut cmd = &mut Command::new(get_compiler());
-    cmd = cmd.stderr(Stdio::inherit()).arg("-o").arg(target);
+    cmd = cmd.stderr(Stdio::inherit());
 
     for path in compile_paths {
         cmd = cmd.arg(path);
     }
 
-    // TODO: Do something with the status
+    for (name, lib) in &libs {
+        cmd = cmd.args(lib.lib_links(name)?.split(" "));
+        cmd = cmd.args(lib.headers(name)?.split(" "));
+    }
+
+    cmd = cmd.arg("-o").arg(target);
+
     let _status = cmd.status()?;
 
     Ok(Some(target.to_path_buf()))
 }
 
-pub fn library(compile_paths: &[PathBuf], target: &Path) -> Result<Option<PathBuf>> {
+pub fn library(
+    libs: HashMap<String, Lib>,
+    compile_paths: &[PathBuf],
+    target: &Path,
+) -> Result<Option<PathBuf>> {
     pretty::msg("link", target.display());
 
     let mut cmd = &mut Command::new(get_archiver());
@@ -33,6 +48,11 @@ pub fn library(compile_paths: &[PathBuf], target: &Path) -> Result<Option<PathBu
 
     for path in compile_paths {
         cmd = cmd.arg(path);
+    }
+
+    for (name, lib) in &libs {
+        cmd = cmd.args(lib.lib_links(name)?.split(" "));
+        cmd = cmd.args(lib.headers(name)?.split(" "));
     }
 
     // TODO: Do something with the status

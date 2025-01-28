@@ -11,23 +11,24 @@ use crate::{
     config::{brick::BrickKind, Config},
 };
 
-pub fn build(config: Config, _build_command: BuildCommand) -> Result<Option<PathBuf>> {
+pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathBuf>> {
     let mut compile_paths = vec![];
 
     for entry in walkdir::WalkDir::new("./src").follow_links(true) {
-        let Some(path) = compile::compile(&config, entry)? else {
+        let Some(path) = compile::compile(&config, entry, build_command.force)? else {
             continue;
         };
         compile_paths.push(path);
     }
 
-    // TODO: Instead of passing the whole config, just pass the compiler / archiver
     match config.brick.kind {
         BrickKind::Binary => link::binary(
+            config.libs,
             &compile_paths,
             &Path::new("./build").join(&config.brick.name),
         ),
         BrickKind::Library => link::library(
+            config.libs,
             &compile_paths,
             &Path::new("./build").join(String::from("lib") + &config.brick.name + ".a"),
         ),

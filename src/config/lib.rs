@@ -38,7 +38,7 @@ impl Lib {
             LibKind::Git => todo!(),
         }
     }
-    pub fn objects(&self, name: &str) -> Result<String> {
+    pub fn lib_links(&self, name: &str) -> Result<String> {
         match self.kind {
             LibKind::System => {
                 let output = Command::new("pkg-config")

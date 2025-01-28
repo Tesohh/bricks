@@ -20,6 +20,11 @@ pub fn init(cmd: InitCommand) -> Result<()> {
     fs::create_dir(project_path)?;
     fs::write(project_path.join("brick.toml"), config)?;
 
+    fs::write(
+        project_path.join(".gitignore"),
+        templates::gitignore(&cmd.name),
+    )?;
+
     let src_path = project_path.join("src");
     fs::create_dir(&src_path)?;
 

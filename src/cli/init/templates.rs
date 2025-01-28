@@ -30,3 +30,11 @@ int main() {{
         name
     )
 }
+
+pub fn gitignore(_name: &str) -> String {
+    "build/\n.clangd".to_string()
+}
+
+pub fn clangd() -> String {
+    "CompileFlags:\n  Add:\n".to_string()
+}

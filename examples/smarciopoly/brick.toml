@@ -10,10 +10,10 @@ list = ["utils"]
 [libs.raylib] # this library simply comes as -lraylib
 kind = "system"
 
-[libs.strings] # this library uses bricks
-kind = "git"
-repo = "https://github.com/Tesohh/strings.git"
-version = "latest"
+# [libs.strings] # this library uses bricks
+# kind = "git"
+# repo = "https://github.com/Tesohh/strings.git"
+# version = "latest"
 
 # [libs.slices] # example of a library that doesn't use bricks
 # src = "web:github.com/Tesohh/vectors"

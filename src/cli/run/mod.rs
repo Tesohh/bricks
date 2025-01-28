@@ -11,12 +11,17 @@ use crate::{
     config::{brick::BrickKind, Config},
 };
 
-pub fn run(config: Config, _run_command: RunCommand) -> Result<()> {
+pub fn run(config: Config, run_command: RunCommand) -> Result<()> {
     if let BrickKind::Library = config.brick.kind {
         bail!("cannot run a library")
     }
 
-    let build_path = match build::build(config, BuildCommand {})? {
+    let build_path = match build::build(
+        config,
+        BuildCommand {
+            force: run_command.force,
+        },
+    )? {
         Some(p) => p,
         None => bail!("build path was not returned"),
     };

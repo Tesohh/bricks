@@ -22,10 +22,16 @@ pub enum SubCommand {
 }
 
 #[derive(Debug, Args)]
-pub struct BuildCommand {}
+pub struct BuildCommand {
+    #[arg(long, required = false)]
+    pub force: bool,
+}
 
 #[derive(Debug, Args)]
-pub struct RunCommand {}
+pub struct RunCommand {
+    #[arg(long, required = false)]
+    pub force: bool,
+}
 
 #[derive(Debug, Args)]
 pub struct InitCommand {

@@ -20,6 +20,7 @@ pub fn run(config: Config, run_command: RunCommand) -> Result<()> {
         config,
         BuildCommand {
             force: run_command.force,
+            path: run_command.path,
         },
     )? {
         Some(p) => p,

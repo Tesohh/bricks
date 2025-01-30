@@ -14,7 +14,9 @@ use crate::{
 pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathBuf>> {
     let mut compile_paths = vec![];
 
-    for entry in walkdir::WalkDir::new("./src").follow_links(true) {
+    let src_path = Path::new(&build_command.path).join("src");
+
+    for entry in walkdir::WalkDir::new(src_path).follow_links(true) {
         let Some(path) = compile::compile(&config, entry, build_command.force)? else {
             continue;
         };
@@ -25,12 +27,17 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
         BrickKind::Binary => link::binary(
             config.libs,
             &compile_paths,
-            &Path::new("./build").join(&config.brick.name),
+            &Path::new(&build_command.path)
+                .join("build")
+                .join(&config.brick.name),
         ),
         BrickKind::Library => link::library(
             config.libs,
             &compile_paths,
-            &Path::new("./build").join(String::from("lib") + &config.brick.name + ".a"),
+            &Path::new(&build_command.path)
+                .join("build")
+                .join("lib")
+                .join(String::from("lib") + &config.brick.name + ".a"),
         ),
     }
 }

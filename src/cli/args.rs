@@ -15,22 +15,28 @@ pub enum SubCommand {
     Init(InitCommand),
 
     /// Install required libraries
-    Install,
+    Install(InstallCommand),
 
     /// Cleans the build directory
-    Clean,
+    Clean(CleanCommand),
 }
 
 #[derive(Debug, Args)]
 pub struct BuildCommand {
     #[arg(long, required = false)]
     pub force: bool,
+
+    #[clap(default_value = ".")]
+    pub path: String,
 }
 
 #[derive(Debug, Args)]
 pub struct RunCommand {
     #[arg(long, required = false)]
     pub force: bool,
+
+    #[clap(default_value = ".")]
+    pub path: String,
 }
 
 #[derive(Debug, Args)]
@@ -43,6 +49,18 @@ pub struct InitCommand {
     #[arg(long, required = false)]
     /// Sets this project as lib
     pub lib: bool,
+}
+
+#[derive(Debug, Args)]
+pub struct CleanCommand {
+    #[clap(default_value = ".")]
+    pub path: String,
+}
+
+#[derive(Debug, Args)]
+pub struct InstallCommand {
+    #[clap(default_value = ".")]
+    pub path: String,
 }
 
 #[derive(Debug, Parser)]

@@ -21,8 +21,12 @@ fn _main() -> Result<()> {
             }
         }
         SubCommand::Run(run_command) => cli::run::run(read_config(&args.config)?, run_command),
-        SubCommand::Install => cli::install::install(read_config(&args.config)?),
-        SubCommand::Clean => cli::clean::clean(read_config(&args.config)?),
+        SubCommand::Install(install_command) => {
+            cli::install::install(read_config(&args.config)?, install_command)
+        }
+        SubCommand::Clean(clean_command) => {
+            cli::clean::clean(read_config(&args.config)?, clean_command)
+        }
         SubCommand::Init(init_command) => cli::init::init(init_command),
     }?;
 

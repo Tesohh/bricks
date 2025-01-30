@@ -7,7 +7,10 @@ use crate::{
     libs::{blueprint::BlueprintFile, install_lib::install_lib},
 };
 
-pub fn install(config: Config) -> Result<()> {
+use super::args::InstallCommand;
+
+// TODO: should take path??
+pub fn install(config: Config, _install_command: InstallCommand) -> Result<()> {
     let mut blueprints = BlueprintFile { bp: HashMap::new() };
 
     for (name, lib) in &config.libs {

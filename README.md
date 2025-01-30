@@ -1,6 +1,43 @@
 # bricks
 build system and package manager for C/C++
 
+
+## Installing
+For now the only way to use `bricks` is by building from source.
+
+```sh
+git clone https://github.com/Tesohh/bricks.git
+cd bricks
+cargo install --path .
+```
+
+## Project setup
+To initialize a new project (binary):
+
+```sh
+bricks init project_name
+cd project_name
+```
+
+To add to an existing project:
+- Add the basic config template to `brick.toml` in your project root
+
+After adding all dependencies to the `brick.toml` file, run `bricks install`
+
+## Config
+Here is an example config for a raylib project:
+
+```toml
+[brick]
+name = "project_name"
+kind = "binary"
+lang = "c"
+edition = "c99"
+
+[libs.raylib]
+kind = "system"
+```
+
 ## Why?
 I would like to make more stuff in C, but I hate the tooling around it.. so I wanted to make my own
 
@@ -30,30 +67,3 @@ I'm making this mostly for myself, but if other libraries use it, that would be 
     - compile all .c files
     - link them if binary,
     - `ar` them if library
-
-## Project structure
-Project structure is similar to what you might find in a go or cargo project:
-
-```
-project/
-    src/
-        main.c
-        test.c
-        utils/
-            utils.h
-            math.c
-            types.c
-        game/
-            game.h
-            game.c
-    .git
-    README.md
-    ...
-```
-
-- in this case `utils` and `game` are packages inside the project.
-    - it should only have 1 header, with the same name as the directory
-    - then all .c files inside will implement that header.
-
-- as for testing, it is all managed by `test.c`. 
-    - Perhaps, I will create a testing framework for `bricks`, but that's beyond my scope for now.

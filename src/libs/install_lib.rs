@@ -1,10 +1,10 @@
 use std::{
-    fs::{self, OpenOptions},
-    io::{Read, Write},
+    fs::{self},
+    io::Write,
     path::Path,
 };
 
-use anyhow::{bail, Result};
+use anyhow::Result;
 
 use crate::{
     cli::{init::templates, pretty},
@@ -12,11 +12,13 @@ use crate::{
 };
 
 pub fn install_lib(name: &str, lib: &Lib) -> Result<()> {
-    pretty::msg("install", format!("{} version {}", name, lib.version));
-
     match lib.kind {
         LibKind::System => {
             let clangd_path = Path::new(".clangd");
+            pretty::msg(
+                "add to .clangd",
+                format!("{} version {}", name, lib.version),
+            );
 
             match fs::exists(clangd_path) {
                 Ok(false) => {

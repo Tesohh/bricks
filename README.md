@@ -38,6 +38,11 @@ edition = "c99"
 kind = "system"
 ```
 
+If you need to use the `.clangd` file,
+please add your configuration to `clangd.yml`.
+`bricks` will manage it for you.
+make sure `CompileFlags` is the last option, so `bricks` can add headers automatically
+
 ## Why?
 I would like to make more stuff in C, but I hate the tooling around it.. so I wanted to make my own
 

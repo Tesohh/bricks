@@ -1,4 +1,6 @@
-use anyhow::Result;
+use std::{fs, os, path::Path, process::Command};
+
+use anyhow::{bail, Result};
 
 use crate::config::lib::{Lib, LibKind};
 
@@ -12,6 +14,8 @@ pub fn install_lib(name: &str, lib: &Lib, blueprints: &mut BlueprintFile) -> Res
         LibKind::Git => {
             // if the library isn't already installed:
             // git clone it from the provided source
+
+            Command::new("git").arg("clone");
             // in the library's directory:
             // run bricks install
             // run bricks build
@@ -29,26 +33,5 @@ pub fn install_lib(name: &str, lib: &Lib, blueprints: &mut BlueprintFile) -> Res
         .bp
         .insert(name.to_string(), Blueprint { libs, headers });
 
-    // Add to clangd
-    // let clangd_path = Path::new(".clangd");
-    // pretty::msg(
-    //     "add to .clangd",
-    //     format!("{} version {}", name, lib.version),
-    // );
-
-    // match fs::exists(clangd_path) {
-    //     Ok(false) => {
-    //         fs::write(clangd_path, templates::clangd())?;
-    //     }
-    //     Err(_) => {
-    //         fs::write(clangd_path, templates::clangd())?;
-    //     }
-    //     _ => {}
-    // }
-    //
-    // let mut append_file = fs::OpenOptions::new().append(true).open(clangd_path)?;
-    //
-    // let new_entry = format!("    - \"{}\"\n", lib.headers(name)?);
-    // append_file.write_all(new_entry.as_bytes())?;
     Ok(())
 }

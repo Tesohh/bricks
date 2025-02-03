@@ -29,8 +29,14 @@ pub fn init(cmd: InitCommand) -> Result<()> {
     fs::create_dir(&src_path)?;
 
     match cmd.cpp {
-        true => fs::write(src_path.join("main.cpp"), templates::main_cpp(&cmd.name)),
-        false => fs::write(src_path.join("main.c"), templates::main_c(&cmd.name)),
+        true => match cmd.lib {
+            true => fs::write(src_path.join("lib.cpp"), templates::lib_cpp(&cmd.name)),
+            false => fs::write(src_path.join("main.cpp"), templates::main_cpp(&cmd.name)),
+        },
+        false => match cmd.lib {
+            true => fs::write(src_path.join("lib.c"), templates::lib_c(&cmd.name)),
+            false => fs::write(src_path.join("main.c"), templates::main_c(&cmd.name)),
+        },
     }?;
 
     pretty::msg("init", &cmd.name);

@@ -31,6 +31,28 @@ int main() {{
     )
 }
 
+pub fn lib_c(name: &str) -> String {
+    format!(
+        r#"#include <stdio.h>
+
+int hello() {{
+    printf("hello {}!\n");
+}}"#,
+        name
+    )
+}
+
+pub fn lib_cpp(name: &str) -> String {
+    format!(
+        r#"#include <iostream>
+
+int hello() {{
+    cout << "hello {}!" << endl;
+}}"#,
+        name
+    )
+}
+
 pub fn gitignore(_name: &str) -> String {
     "build/\n.clangd".to_string()
 }

@@ -21,6 +21,7 @@ pub fn run(config: Config, run_command: RunCommand) -> Result<()> {
         BuildCommand {
             force: run_command.force,
             path: run_command.path,
+            emit_compile_commands: true,
         },
     )? {
         Some(p) => p,

@@ -9,7 +9,10 @@ use walkdir::DirEntry;
 
 use crate::{cli::pretty, config::Config};
 
-use super::tools::get_compiler;
+use super::{
+    compile_commands::{CompileCommand, CompileDatabase},
+    tools::get_compiler,
+};
 
 pub fn src_to_build_path(path: &Path) -> PathBuf {
     let mut new_path = PathBuf::new();
@@ -34,7 +37,7 @@ pub fn compile(
     config: &Config,
     file: walkdir::Result<DirEntry>,
     force: bool,
-) -> Result<Option<PathBuf>> {
+) -> Result<Option<(PathBuf, CompileCommand)>> {
     let file = file?;
 
     if file.file_type().is_dir() {

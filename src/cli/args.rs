@@ -26,6 +26,9 @@ pub struct BuildCommand {
     #[arg(long, required = false)]
     pub force: bool,
 
+    #[arg(long, default_value = "true")]
+    pub emit_compile_commands: bool,
+
     #[clap(default_value = ".")]
     pub path: String,
 }

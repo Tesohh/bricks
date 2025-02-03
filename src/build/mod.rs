@@ -1,10 +1,12 @@
 pub mod compile;
+pub mod compile_commands;
 pub mod link;
 pub mod tools;
 
 use std::path::{Path, PathBuf};
 
 use anyhow::Result;
+use compile_commands::CompileDatabase;
 
 use crate::{
     cli::args::BuildCommand,
@@ -16,11 +18,15 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
 
     let src_path = Path::new(&build_command.path).join("src");
 
+    let mut compile_db = CompileDatabase::new();
+
     for entry in walkdir::WalkDir::new(src_path).follow_links(true) {
-        let Some(path) = compile::compile(&config, entry, build_command.force)? else {
+        let Some((path, compile_cmd)) = compile::compile(&config, entry, build_command.force)?
+        else {
             continue;
         };
         compile_paths.push(path);
+        compile_db.push(compile_cmd);
     }
 
     match config.brick.kind {
@@ -40,6 +46,8 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
                 .join(String::from("lib") + &config.brick.name + ".a"),
         ),
     }
+
+    // TODO: Emit compile db (if asked to)
 }
 
 #[cfg(test)]

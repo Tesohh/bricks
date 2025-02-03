@@ -53,10 +53,12 @@ int hello() {{
     )
 }
 
-pub fn gitignore(_name: &str) -> String {
-    "build/\n.clangd".to_string()
+pub fn clangd() -> String {
+    r#"CompileFlags:
+  CompilationDatabase: build/"#
+        .to_string()
 }
 
-pub fn clangd() -> String {
-    "CompileFlags:\n  Add:\n".to_string()
+pub fn gitignore(_name: &str) -> String {
+    "build/".to_string()
 }

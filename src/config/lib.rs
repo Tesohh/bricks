@@ -17,8 +17,7 @@ pub struct Lib {
     pub kind: LibKind,
     pub repo: Option<String>,
 
-    #[serde(default = "latest")]
-    pub version: String,
+    pub version: Option<String>,
     // Compatibility
     // pub build: Option<String>,
     // pub headers: Option<Vec<String>>,
@@ -84,15 +83,32 @@ impl Lib {
         }
     }
 
-    pub fn pathify_repo(&self) -> Option<PathBuf> {
-        Some(
-            home_dir()?
-                .join(".bricks")
-                .join("libs")
-                .join(self.directify_repo()?)
-                .join(&self.version),
-        )
+    pub fn pathify_repo(&self) -> Result<PathBuf, LibPathificationError> {
+        let home = home_dir().ok_or(LibPathificationError::HomeDirMissing)?;
+        let lib_dir = self
+            .directify_repo()
+            .ok_or(LibPathificationError::RepoUriMissing)?;
+        let version = self
+            .version
+            .as_ref()
+            .ok_or(LibPathificationError::VersionMissing)?;
+
+        Ok(home
+            .join(".bricks")
+            .join("libs")
+            .join(lib_dir)
+            .join(version))
     }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum LibPathificationError {
+    #[error("unable to get the home directory")]
+    HomeDirMissing,
+    #[error("lib is missing the `repo` property")]
+    RepoUriMissing,
+    #[error("lib is missing the `version` property")]
+    VersionMissing,
 }
 
 fn latest() -> String {
@@ -110,11 +126,11 @@ mod tests {
         let no_repo_lib = Lib {
             kind: LibKind::Git,
             repo: None,
-            version: "2020".to_string(),
+            version: Some("2020".to_string()),
         };
         assert_eq!(no_repo_lib.normalize_repo(), None);
         assert_eq!(no_repo_lib.directify_repo(), None);
-        assert_eq!(no_repo_lib.pathify_repo(), None);
+        assert!(matches!(no_repo_lib.pathify_repo(), Err(_)));
     }
 
     #[test]
@@ -122,7 +138,7 @@ mod tests {
         let mut lib = Lib {
             kind: LibKind::Git,
             repo: Some("github.com/Tesohh/strings.git".to_string()),
-            version: "2020".to_string(),
+            version: Some("2020".to_string()),
         };
         assert_eq!(
             lib.normalize_repo(),
@@ -147,7 +163,7 @@ mod tests {
         let lib = Lib {
             kind: LibKind::Git,
             repo: Some("github.com/Tesohh/strings.git".to_string()),
-            version: "2020".to_string(),
+            version: Some("2020".to_string()),
         };
 
         assert_eq!(
@@ -161,19 +177,19 @@ mod tests {
         let lib = Lib {
             kind: LibKind::Git,
             repo: Some("github.com/Tesohh/strings.git".to_string()),
-            version: "2020".to_string(),
+            version: Some("2020".to_string()),
         };
 
+        let path = lib.pathify_repo().unwrap();
+
         assert_eq!(
-            lib.pathify_repo(),
-            Some(
-                Path::new(&home_dir().unwrap())
-                    .join(".bricks")
-                    .join("libs")
-                    .join("github.com-Tesohh-strings")
-                    .join("2020")
-                    .to_path_buf()
-            )
+            path,
+            Path::new(&home_dir().unwrap())
+                .join(".bricks")
+                .join("libs")
+                .join("github.com-Tesohh-strings")
+                .join("2020")
+                .to_path_buf()
         );
     }
 }

@@ -17,9 +17,7 @@ pub fn install_lib(name: &str, lib: &Lib) -> Result<()> {
                 bail!("{} is missing the `repo` property", name);
             };
 
-            let Some(dest_path) = lib.pathify_repo() else {
-                bail!("{} is missing the `repo` property", name);
-            };
+            let dest_path = lib.pathify_repo()?;
 
             dbg!(Command::new("git")
                 .arg("clone")

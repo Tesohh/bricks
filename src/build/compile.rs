@@ -4,7 +4,7 @@ use std::{
     process::{Command, Stdio},
 };
 
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use walkdir::DirEntry;
 
 use crate::{
@@ -54,11 +54,11 @@ pub fn compile(
     let src_metadata = file.metadata();
     let build_metadata = fs::metadata(&build_path);
 
-    let Some(parent) = build_path.parent() else {
+    let Some(build_parent) = build_path.parent() else {
         bail!("cannot get parent from build path {}", build_path.display())
     };
 
-    fs::create_dir_all(parent)?;
+    fs::create_dir_all(build_parent)?;
 
     let mut cmd = Command::new(get_compiler());
     cmd.arg(format!("-std={}", config.brick.edition))
@@ -73,11 +73,18 @@ pub fn compile(
     }
 
     // generate command for compile_cmd
-    // let cmd_str = cmd.get_program().to_str() + " " + cmd.get_args();
+
+    let project_path = file
+        .path()
+        .parent()
+        .context("unable to find parent of src file")?
+        .parent()
+        .context("unable to find parent of src directory")?;
+
     let compile_cmd = CompileCommand {
-        directory: std::path::absolute(parent)?.display().to_string(),
+        directory: std::path::absolute(project_path)?.display().to_string(),
         command: cmd.to_string(),
-        file: build_path.display().to_string(),
+        file: src_path_name.to_string(),
     };
 
     dbg!(&compile_cmd);

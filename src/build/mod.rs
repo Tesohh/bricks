@@ -3,13 +3,16 @@ pub mod compile_commands;
 pub mod link;
 pub mod tools;
 
-use std::path::{Path, PathBuf};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
 use anyhow::Result;
 use compile_commands::CompileDatabase;
 
 use crate::{
-    cli::args::BuildCommand,
+    cli::{args::BuildCommand, pretty},
     config::{brick::BrickKind, Config},
 };
 
@@ -29,7 +32,7 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
         compile_db.push(compile_cmd);
     }
 
-    match config.brick.kind {
+    let build_result = match config.brick.kind {
         BrickKind::Binary => link::binary(
             config.libs,
             &compile_paths,
@@ -45,9 +48,18 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
                 .join("lib")
                 .join(String::from("lib") + &config.brick.name + ".a"),
         ),
-    }
+    };
 
-    // TODO: Emit compile db (if asked to)
+    if build_command.emit_compile_commands {
+        pretty::msg("emit", "build/compile_commands.json");
+        let comp_path = Path::new(&build_command.path)
+            .join("build")
+            .join("compile_commands.json");
+        let comp_file = fs::File::create(comp_path)?;
+        serde_json::to_writer(comp_file, &compile_db)?;
+    };
+
+    build_result
 }
 
 #[cfg(test)]

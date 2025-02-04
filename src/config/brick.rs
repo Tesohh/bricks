@@ -45,4 +45,10 @@ pub struct Brick {
     pub kind: BrickKind,
     pub lang: BrickLang,
     pub edition: String,
+    #[serde(default = "default_cflags")]
+    pub cflags: String,
+}
+
+fn default_cflags() -> String {
+    "".into()
 }

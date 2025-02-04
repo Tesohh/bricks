@@ -62,6 +62,7 @@ pub fn compile(
 
     let mut cmd = Command::new(get_compiler());
     cmd.arg(format!("-std={}", config.brick.edition))
+        .args(config.brick.cflags.split_whitespace())
         .arg("-c")
         .arg(file.path())
         .arg("-o")

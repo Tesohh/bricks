@@ -85,7 +85,13 @@ impl Lib {
     }
 
     pub fn pathify_repo(&self) -> Option<PathBuf> {
-        Some(home_dir()?.join(self.directify_repo()?).join(&self.version))
+        Some(
+            home_dir()?
+                .join(".bricks")
+                .join("libs")
+                .join(self.directify_repo()?)
+                .join(&self.version),
+        )
     }
 }
 
@@ -162,6 +168,8 @@ mod tests {
             lib.pathify_repo(),
             Some(
                 Path::new(&home_dir().unwrap())
+                    .join(".bricks")
+                    .join("libs")
                     .join("github.com-Tesohh-strings")
                     .join("2020")
                     .to_path_buf()

@@ -1,12 +1,10 @@
 use std::process::Command;
 
-use anyhow::Result;
+use anyhow::{bail, Context, Result};
 
 use crate::config::lib::{Lib, LibKind};
 
-use super::blueprint::{Blueprint, BlueprintFile};
-
-pub fn install_lib(name: &str, lib: &Lib, blueprints: &mut BlueprintFile) -> Result<()> {
+pub fn install_lib(name: &str, lib: &Lib) -> Result<()> {
     match lib.kind {
         LibKind::System => {
             // you don't need to do anything here.
@@ -15,7 +13,19 @@ pub fn install_lib(name: &str, lib: &Lib, blueprints: &mut BlueprintFile) -> Res
             // if the library isn't already installed:
             // git clone it from the provided source
 
-            Command::new("git").arg("clone");
+            let Some(repo_url) = lib.normalize_repo() else {
+                bail!("{} is missing the `repo` property", name);
+            };
+
+            let Some(dest_path) = lib.pathify_repo() else {
+                bail!("{} is missing the `repo` property", name);
+            };
+
+            dbg!(Command::new("git")
+                .arg("clone")
+                .arg(repo_url)
+                .arg(dest_path));
+
             // in the library's directory:
             // run bricks install
             // run bricks build
@@ -23,15 +33,6 @@ pub fn install_lib(name: &str, lib: &Lib, blueprints: &mut BlueprintFile) -> Res
             // if it's already installed, you don't need to do anything.
         }
     };
-
-    // Get lib and header directory from Lib::lib_links and Lib::header
-    let libs = lib.lib_links(name)?;
-    let headers = lib.headers(name)?;
-
-    // Add blueprint entry to blueprintfile
-    blueprints
-        .bp
-        .insert(name.to_string(), Blueprint { libs, headers });
 
     Ok(())
 }

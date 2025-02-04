@@ -1,5 +1,6 @@
 pub mod compile;
 pub mod compile_commands;
+pub mod include;
 pub mod link;
 pub mod tools;
 
@@ -23,7 +24,7 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
 
     let mut compile_db = CompileDatabase::new();
 
-    for entry in walkdir::WalkDir::new(src_path).follow_links(true) {
+    for entry in walkdir::WalkDir::new(&src_path).follow_links(true) {
         let Some((path, compile_cmd)) = compile::compile(&config, entry, build_command.force)?
         else {
             continue;
@@ -58,6 +59,8 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
         let comp_file = fs::File::create(comp_path)?;
         serde_json::to_writer(comp_file, &compile_db)?;
     };
+
+    include::copy_headers(&src_path)?;
 
     build_result
 }

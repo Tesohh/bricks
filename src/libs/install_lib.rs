@@ -1,11 +1,9 @@
-use std::process::Command;
-
 use anyhow::{bail, Result};
+use git2::Repository;
 
-use crate::{
-    cli::commandext::CommandExt,
-    config::lib::{Lib, LibKind, LibPathificationError},
-};
+use crate::config::lib::{Lib, LibKind, LibPathificationError};
+
+use super::git_utils::RepositoryExt;
 
 pub fn install_lib(name: &str, lib: &Lib) -> Result<()> {
     match lib.kind {
@@ -26,22 +24,29 @@ pub fn install_lib(name: &str, lib: &Lib) -> Result<()> {
                 return Err(LibPathificationError::VersionMissing.into());
             };
 
-            dbg!(Command::new("git")
-                .arg("clone")
-                .args(["--depth", "1"])
-                .arg("--branch")
-                .arg(version)
-                .arg(repo_url)
-                .arg(dest_path)
-                .to_string());
+            // init repo, add remote and try to resolve commit
+            let repo = Repository::init(&dest_path)?;
+            let mut remote = repo.remote_anonymous(&repo_url)?;
+            remote.connect(git2::Direction::Fetch)?;
 
+            // try to fetch the commit
+            remote.fetch(&[version], None, None)?;
+            for x in remote.refspecs() {
+                dbg!(x.str());
+            }
+            // let oid = repo.refname_to_id("FETCH_HEAD")?;
+            // dbg!(oid);
+            // let oid = repo.resolve_commit(version)?;
+            //
+            // // checkout to that commi https://github.com/Tesohh/brick_testt
+            // repo.set_head_detached(oid)?;
+            // repo.checkout_head(None)?;
             // in the library's directory:
             // run bricks install
-            // run bricks build
+            // run bricks build https://github.com/Tesohh/brick_test
             //
-            // if it's already installed, you don't need to do anything.
+            // if it's already installed, you don't need to do anything. https://github.com/Tesohh/brick_test https://github.com/Tesohh/brick_test
         }
     };
-
     Ok(())
 }

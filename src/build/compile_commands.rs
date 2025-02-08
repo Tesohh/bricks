@@ -14,6 +14,12 @@ impl CompileDatabase {
     }
 }
 
+impl Default for CompileDatabase {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Debug, Serialize)]
 pub struct CompileCommand {
     /// The working directory of the compilation. All paths specified in the command or file fields must be either absolute or relative to this directory.

@@ -111,10 +111,6 @@ pub enum LibPathificationError {
     VersionMissing,
 }
 
-fn latest() -> String {
-    "latest".to_string()
-}
-
 #[cfg(test)]
 mod tests {
     use std::path::Path;
@@ -130,7 +126,7 @@ mod tests {
         };
         assert_eq!(no_repo_lib.normalize_repo(), None);
         assert_eq!(no_repo_lib.directify_repo(), None);
-        assert!(matches!(no_repo_lib.pathify_repo(), Err(_)));
+        assert!(no_repo_lib.pathify_repo().is_err());
     }
 
     #[test]

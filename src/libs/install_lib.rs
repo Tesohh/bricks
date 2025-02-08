@@ -1,8 +1,11 @@
 use std::process::Command;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 
-use crate::config::lib::{Lib, LibKind};
+use crate::{
+    cli::commandext::CommandExt,
+    config::lib::{Lib, LibKind, LibPathificationError},
+};
 
 pub fn install_lib(name: &str, lib: &Lib) -> Result<()> {
     match lib.kind {
@@ -19,10 +22,18 @@ pub fn install_lib(name: &str, lib: &Lib) -> Result<()> {
 
             let dest_path = lib.pathify_repo()?;
 
+            let Some(ref version) = lib.version else {
+                return Err(LibPathificationError::VersionMissing.into());
+            };
+
             dbg!(Command::new("git")
                 .arg("clone")
+                .args(["--depth", "1"])
+                .arg("--branch")
+                .arg(version)
                 .arg(repo_url)
-                .arg(dest_path));
+                .arg(dest_path)
+                .to_string());
 
             // in the library's directory:
             // run bricks install

@@ -24,23 +24,16 @@ pub fn install_lib(name: &str, lib: &Lib) -> Result<()> {
                 return Err(LibPathificationError::VersionMissing.into());
             };
 
-            // init repo, add remote and try to resolve commit
-            let repo = Repository::init(&dest_path)?;
-            let mut remote = repo.remote_anonymous(&repo_url)?;
-            remote.connect(git2::Direction::Fetch)?;
-
-            // try to fetch the commit
-            remote.fetch(&[version], None, None)?;
-            for x in remote.refspecs() {
-                dbg!(x.str());
-            }
-            // let oid = repo.refname_to_id("FETCH_HEAD")?;
-            // dbg!(oid);
-            // let oid = repo.resolve_commit(version)?;
+            // TODO: if the library version is already there, use that
             //
-            // // checkout to that commi https://github.com/Tesohh/brick_testt
-            // repo.set_head_detached(oid)?;
-            // repo.checkout_head(None)?;
+
+            // if it's not already there...
+            // check if the full repo is already there
+            // if not: clone
+            // if it is there: pull to update the library
+
+            // copy the required version to another directory and use that
+
             // in the library's directory:
             // run bricks install
             // run bricks build https://github.com/Tesohh/brick_test

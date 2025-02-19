@@ -3,12 +3,12 @@ use git2::Oid;
 
 pub trait RepositoryExt {
     fn resolve_commit(&self, version: &str) -> Result<Oid>;
+    fn checkout(&self, version: &str) -> Result<()>;
 }
 
 impl RepositoryExt for git2::Repository {
     fn resolve_commit(&self, version: &str) -> Result<Oid> {
         let rev = self.revparse_single(version)?;
-        println!("HEY");
 
         match rev.kind() {
             Some(git2::ObjectType::Commit) => Ok(rev.id()),
@@ -18,5 +18,15 @@ impl RepositoryExt for git2::Repository {
             Some(git2::ObjectType::Tag) => bail!("`version` must resolve to a commit, got `Tag`"),
             None => bail!("no rev found for `version` {}", version),
         }
+    }
+    fn checkout(&self, version: &str) -> Result<()> {
+        let obj = self.revparse_single(version)?;
+        let commit = obj.peel_to_commit()?;
+        self.checkout_tree(
+            commit.as_object(),
+            Some(git2::build::CheckoutBuilder::new().force()),
+        )?;
+        self.set_head_detached(commit.id())?;
+        Ok(())
     }
 }

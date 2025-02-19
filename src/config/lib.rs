@@ -83,6 +83,15 @@ impl Lib {
         }
     }
 
+    pub fn pathify_repo_no_version(&self) -> Result<PathBuf, LibPathificationError> {
+        let home = home_dir().ok_or(LibPathificationError::HomeDirMissing)?;
+        let lib_dir = self
+            .directify_repo()
+            .ok_or(LibPathificationError::RepoUriMissing)?;
+
+        Ok(home.join(".bricks").join("libs").join(lib_dir))
+    }
+
     pub fn pathify_repo(&self) -> Result<PathBuf, LibPathificationError> {
         let home = home_dir().ok_or(LibPathificationError::HomeDirMissing)?;
         let lib_dir = self

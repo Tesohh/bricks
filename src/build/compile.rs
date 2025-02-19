@@ -59,6 +59,7 @@ pub fn compile(
     };
 
     fs::create_dir_all(build_parent)?;
+    fs::create_dir_all(build_parent.join("lib"))?;
 
     let mut cmd = Command::new(get_compiler());
     cmd.arg(format!("-std={}", config.brick.edition))
@@ -87,8 +88,6 @@ pub fn compile(
         command: cmd.to_string(),
         file: src_path_name.to_string(),
     };
-
-    dbg!(&compile_cmd);
 
     // skip if no edits
     let skip = match (src_metadata, build_metadata) {

@@ -1,4 +1,4 @@
-use anyhow::{anyhow, bail, Result};
+use anyhow::{bail, Result};
 use git2::Oid;
 
 pub trait RepositoryExt {

@@ -16,7 +16,7 @@ use crate::{
 
 use super::{copy_dir::copy_dir, git_utils::RepositoryExt};
 
-pub fn install_lib(name: &str, lib: &Lib) -> Result<()> {
+pub fn install_lib(name: &str, lib: &Lib, force: bool) -> Result<()> {
     pretty::msg("install", name);
     match lib.kind {
         LibKind::System => {
@@ -29,7 +29,7 @@ pub fn install_lib(name: &str, lib: &Lib) -> Result<()> {
 
             // if the library version is already there, use that (and dont do anything)
             let versioned_path = lib.pathify_repo()?;
-            if fs::exists(&versioned_path)? {
+            if !force && fs::exists(&versioned_path)? {
                 return Ok(());
             }
 
@@ -63,6 +63,7 @@ pub fn install_lib(name: &str, lib: &Lib) -> Result<()> {
                 foreign_config,
                 InstallCommand {
                     path: String::from(""),
+                    force,
                 },
             )?;
 

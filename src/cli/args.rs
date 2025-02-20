@@ -64,6 +64,8 @@ pub struct CleanCommand {
 pub struct InstallCommand {
     #[clap(default_value = ".")]
     pub path: String,
+    #[arg(long, required = false)]
+    pub force: bool,
 }
 
 #[derive(Debug, Parser)]

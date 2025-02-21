@@ -13,43 +13,74 @@ pub enum LibKind {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct Overrides {
+    /// the command that will be used to build the library instead of `bricks build`
+    pub build: Option<String>,
+    /// the directory where the includes (headers) are, instead of the default <lib>/build/include
+    pub include_dir: Option<String>,
+    /// the directory where the compiled objects are, instead of the default <lib>/build/lib
+    pub lib_dir: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Lib {
     pub kind: LibKind,
     pub repo: Option<String>,
-
     pub version: Option<String>,
-    // Compatibility
-    // pub build: Option<String>,
-    // pub headers: Option<Vec<String>>,
-    // pub objects: Option<Vec<String>>,
+
+    pub overrides: Option<Overrides>,
 }
 
 impl Lib {
     pub fn headers(&self, name: &str) -> Result<String> {
-        match self.kind {
-            LibKind::System => {
-                let output = Command::new("pkg-config")
-                    .arg(name)
-                    .arg("--cflags")
-                    .output()?;
+        let include_dir = if let Some(overrides) = &self.overrides {
+            overrides
+                .include_dir
+                .as_ref()
+                .map(|include_dir| include_dir.to_string())
+        } else {
+            None
+        };
+        if let Some(include_dir) = include_dir {
+            Ok(include_dir)
+        } else {
+            match self.kind {
+                LibKind::System => {
+                    let output = Command::new("pkg-config")
+                        .arg(name)
+                        .arg("--cflags")
+                        .output()?;
 
-                Ok(String::from_utf8(output.stdout)?.trim_end().to_string())
+                    Ok(String::from_utf8(output.stdout)?.trim_end().to_string())
+                }
+                LibKind::Git => todo!(),
             }
-            LibKind::Git => todo!(),
         }
     }
 
     pub fn lib_links(&self, name: &str) -> Result<String> {
-        match self.kind {
-            LibKind::System => {
-                let output = Command::new("pkg-config")
-                    .arg(name)
-                    .args(["--libs", "--static"])
-                    .output()?;
+        let lib_dir = if let Some(overrides) = &self.overrides {
+            overrides
+                .lib_dir
+                .as_ref()
+                .map(|include_dir| include_dir.to_string())
+        } else {
+            None
+        };
+        if let Some(lib_dir) = lib_dir {
+            Ok(lib_dir)
+        } else {
+            match self.kind {
+                LibKind::System => {
+                    let output = Command::new("pkg-config")
+                        .arg(name)
+                        .args(["--libs", "--static"])
+                        .output()?;
 
-                Ok(String::from_utf8(output.stdout)?.trim_end().to_string())
+                    Ok(String::from_utf8(output.stdout)?.trim_end().to_string())
+                }
+                LibKind::Git => todo!(),
             }
-            LibKind::Git => todo!(),
         }
     }
 

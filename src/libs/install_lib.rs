@@ -16,8 +16,10 @@ use crate::{
 
 use super::{copy_dir::copy_dir, git_utils::RepositoryExt};
 
-pub fn install_lib(name: &str, lib: &Lib, force: bool) -> Result<()> {
-    pretty::msg("install", name);
+pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<()> {
+    if !silent {
+        pretty::msg("install", name);
+    }
     match lib.kind {
         LibKind::System => {
             // you don't need to do anything here.
@@ -65,6 +67,7 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool) -> Result<()> {
                 InstallCommand {
                     path: String::from(""),
                     force,
+                    silent: true,
                 },
             )?;
 
@@ -74,6 +77,7 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool) -> Result<()> {
                 force: true,
                 emit_compile_commands: false,
                 path: String::from(versioned_path.to_string_lossy()),
+                silent: true,
             };
             build::build(foreign_config, build_cmd)?;
         }

@@ -37,6 +37,7 @@ pub fn compile(
     config: &Config,
     file: walkdir::Result<DirEntry>,
     force: bool,
+    silent: bool,
 ) -> Result<Option<(PathBuf, CompileCommand)>> {
     let file = file?;
 
@@ -101,11 +102,15 @@ pub fn compile(
     };
 
     if !force && skip {
-        pretty::msg("skip", &src_path_name);
+        if !silent {
+            pretty::msg("skip", &src_path_name);
+        }
         return Ok(Some((build_path, compile_cmd)));
     }
 
-    pretty::msg("compile", &src_path_name);
+    if !silent {
+        pretty::msg("compile", &src_path_name);
+    }
 
     let output = cmd.output()?;
 

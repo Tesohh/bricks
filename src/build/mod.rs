@@ -25,7 +25,8 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
     let mut compile_db = CompileDatabase::new();
 
     for entry in walkdir::WalkDir::new(&src_path).follow_links(true) {
-        let Some((path, compile_cmd)) = compile::compile(&config, entry, build_command.force)?
+        let Some((path, compile_cmd)) =
+            compile::compile(&config, entry, build_command.force, build_command.silent)?
         else {
             continue;
         };
@@ -40,6 +41,7 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
             &Path::new(&build_command.path)
                 .join("build")
                 .join(&config.brick.name),
+            build_command.silent,
         ),
         BrickKind::Library => link::library(
             config.libs,
@@ -48,11 +50,14 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
                 .join("build")
                 .join("lib")
                 .join(String::from("lib") + &config.brick.name + ".a"),
+            build_command.silent,
         ),
     };
 
     if build_command.emit_compile_commands {
-        pretty::msg("emit", "build/compile_commands.json");
+        if !build_command.silent {
+            pretty::msg("emit", "build/compile_commands.json");
+        }
         let comp_path = Path::new(&build_command.path)
             .join("build")
             .join("compile_commands.json");

@@ -7,7 +7,7 @@ use super::args::InstallCommand;
 // TODO: should take path??
 pub fn install(config: Config, install_command: InstallCommand) -> Result<()> {
     for (name, lib) in &config.libs {
-        match install_lib(name, lib, install_command.force) {
+        match install_lib(name, lib, install_command.force, install_command.silent) {
             Ok(_) => {}
             Err(err) => {
                 bail!(

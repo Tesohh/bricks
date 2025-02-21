@@ -31,6 +31,9 @@ pub struct BuildCommand {
 
     #[clap(default_value = ".")]
     pub path: String,
+
+    #[arg(long, required = false)]
+    pub silent: bool,
 }
 
 #[derive(Debug, Args)]
@@ -66,6 +69,8 @@ pub struct InstallCommand {
     pub path: String,
     #[arg(long, required = false)]
     pub force: bool,
+    #[arg(long, required = false)]
+    pub silent: bool,
 }
 
 #[derive(Debug, Parser)]

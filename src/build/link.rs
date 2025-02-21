@@ -14,8 +14,11 @@ pub fn binary(
     libs: HashMap<String, Lib>,
     compile_paths: &[PathBuf],
     target: &Path,
+    silent: bool,
 ) -> Result<Option<PathBuf>> {
-    pretty::msg("link", target.display());
+    if !silent {
+        pretty::msg("link", target.display());
+    }
 
     let mut cmd = &mut Command::new(get_compiler());
     cmd = cmd.stderr(Stdio::inherit());
@@ -40,8 +43,11 @@ pub fn library(
     libs: HashMap<String, Lib>,
     compile_paths: &[PathBuf],
     target: &Path,
+    silent: bool,
 ) -> Result<Option<PathBuf>> {
-    pretty::msg("link", target.display());
+    if !silent {
+        pretty::msg("link", target.display());
+    }
 
     let mut cmd = &mut Command::new(get_archiver());
     cmd = cmd.stderr(Stdio::inherit()).arg("crus").arg(target);

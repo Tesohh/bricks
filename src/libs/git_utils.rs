@@ -4,6 +4,7 @@ use git2::Oid;
 pub trait RepositoryExt {
     fn resolve_commit(&self, version: &str) -> Result<Oid>;
     fn checkout(&self, version: &str) -> Result<()>;
+    fn fetch_all(&self, repo_uri: &str) -> Result<()>;
 }
 
 impl RepositoryExt for git2::Repository {
@@ -28,5 +29,10 @@ impl RepositoryExt for git2::Repository {
         )?;
         self.set_head_detached(commit.id())?;
         Ok(())
+    }
+
+    fn fetch_all(&self, repo_uri: &str) -> Result<()> {
+        let mut remote = self.remote_anonymous(repo_uri)?;
+        Ok(remote.fetch(&["+refs/heads/*:refs/remotes/temp/*"], None, None)?)
     }
 }

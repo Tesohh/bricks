@@ -41,8 +41,9 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool) -> Result<()> {
             let repo: git2::Repository = if !fs::exists(&full_path)? {
                 git2::Repository::clone(&repo_uri, &full_path)?
             } else {
-                // TODO: this shoould pull also!
-                git2::Repository::open(&full_path)?
+                let repo = git2::Repository::open(&full_path)?;
+                repo.fetch_all(&repo_uri)?;
+                repo
             };
 
             // checkout to requested version

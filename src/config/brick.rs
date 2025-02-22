@@ -2,6 +2,8 @@ use std::fmt::Display;
 
 use serde::{Deserialize, Serialize};
 
+use super::overrides::Overrides;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum BrickKind {
     #[serde(alias = "binary")]
@@ -47,6 +49,7 @@ pub struct Brick {
     pub edition: String,
     #[serde(default = "default_cflags")]
     pub cflags: String,
+    pub overrides: Option<Overrides>,
 }
 
 fn default_cflags() -> String {

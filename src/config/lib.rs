@@ -4,22 +4,14 @@ use anyhow::Result;
 use home::home_dir;
 use serde::{Deserialize, Serialize};
 
+use super::overrides::Overrides;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub enum LibKind {
     #[serde(alias = "system")]
     System,
     #[serde(alias = "git")]
     Git,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Overrides {
-    /// the command that will be used to build the library instead of `bricks build`
-    pub build: Option<String>,
-    /// the directory where the includes (headers) are, instead of the default <lib>/build/include
-    pub include_dir: Option<String>,
-    /// the directory where the compiled objects are, instead of the default <lib>/build/lib
-    pub lib_dir: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -163,6 +155,7 @@ mod tests {
             kind: LibKind::Git,
             repo: None,
             version: Some("2020".to_string()),
+            overrides: None,
         };
         assert_eq!(no_repo_lib.normalize_repo(), None);
         assert_eq!(no_repo_lib.directify_repo(), None);
@@ -175,6 +168,7 @@ mod tests {
             kind: LibKind::Git,
             repo: Some("github.com/Tesohh/strings.git".to_string()),
             version: Some("2020".to_string()),
+            overrides: None,
         };
         assert_eq!(
             lib.normalize_repo(),
@@ -200,6 +194,7 @@ mod tests {
             kind: LibKind::Git,
             repo: Some("github.com/Tesohh/strings.git".to_string()),
             version: Some("2020".to_string()),
+            overrides: None,
         };
 
         assert_eq!(
@@ -214,6 +209,7 @@ mod tests {
             kind: LibKind::Git,
             repo: Some("github.com/Tesohh/strings.git".to_string()),
             version: Some("2020".to_string()),
+            overrides: None,
         };
 
         let path = lib.pathify_repo().unwrap();

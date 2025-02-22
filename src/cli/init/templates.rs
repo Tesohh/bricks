@@ -15,6 +15,7 @@ pub fn main_c(name: &str) -> String {
 
 int main() {{
     printf("hello {}!\n");
+    return 0;
 }}"#,
         name
     )
@@ -26,6 +27,7 @@ pub fn main_cpp(name: &str) -> String {
 
 int main() {{
     cout << "hello {}!" << endl;
+    return 0;
 }}"#,
         name
     )
@@ -37,6 +39,7 @@ pub fn lib_c(name: &str) -> String {
 
 int hello() {{
     printf("hello {}!\n");
+    return 0;
 }}"#,
         name
     )
@@ -48,6 +51,7 @@ pub fn lib_cpp(name: &str) -> String {
 
 int hello() {{
     cout << "hello {}!" << endl;
+    return 0;
 }}"#,
         name
     )

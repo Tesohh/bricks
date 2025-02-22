@@ -15,7 +15,7 @@ pub fn install(config: &Config, install_command: InstallCommand) -> Result<()> {
     for (name, lib) in &config.libs {
         match install_lib(name, lib, install_command.force, install_command.silent) {
             Ok(Some(overrides)) => {
-                override_db.push(name.to_string(), overrides);
+                override_db.insert(name.to_string(), overrides);
             }
             Ok(_) => {}
             Err(err) => {

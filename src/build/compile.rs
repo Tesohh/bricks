@@ -74,7 +74,7 @@ pub fn compile(
 
     for (name, lib) in &config.libs {
         // HERE: pass the overridedb
-        cmd.args(lib.headers(name)?.split_whitespace());
+        cmd.args(lib.headers(name, override_db)?.split_whitespace());
     }
 
     // generate command for compile_cmd

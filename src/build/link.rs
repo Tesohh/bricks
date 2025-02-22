@@ -6,7 +6,10 @@ use std::{
 
 use anyhow::Result;
 
-use crate::{cli::pretty, config::lib::Lib};
+use crate::{
+    cli::pretty,
+    config::{lib::Lib, overrides::OverrideDatabase},
+};
 
 use super::tools::{get_archiver, get_compiler};
 
@@ -14,6 +17,7 @@ pub fn binary(
     libs: &HashMap<String, Lib>,
     compile_paths: &[PathBuf],
     target: &Path,
+    override_db: &OverrideDatabase,
     silent: bool,
 ) -> Result<Option<PathBuf>> {
     if !silent {
@@ -28,8 +32,9 @@ pub fn binary(
     }
 
     for (name, lib) in libs {
-        cmd = cmd.args(lib.lib_links(name)?.split(" "));
-        cmd = cmd.args(lib.headers(name)?.split(" "));
+        // HERE: get overridedb
+        cmd = cmd.args(lib.lib_links(name, override_db)?.split(" "));
+        cmd = cmd.args(lib.headers(name, override_db)?.split(" "));
     }
 
     cmd = cmd.arg("-o").arg(target);
@@ -43,6 +48,7 @@ pub fn library(
     libs: &HashMap<String, Lib>,
     compile_paths: &[PathBuf],
     target: &Path,
+    override_db: &OverrideDatabase,
     silent: bool,
 ) -> Result<Option<PathBuf>> {
     if !silent {
@@ -57,8 +63,8 @@ pub fn library(
     }
 
     for (name, lib) in libs {
-        cmd = cmd.args(lib.lib_links(name)?.split(" "));
-        cmd = cmd.args(lib.headers(name)?.split(" "));
+        cmd = cmd.args(lib.lib_links(name, override_db)?.split(" "));
+        cmd = cmd.args(lib.headers(name, override_db)?.split(" "));
     }
 
     // TODO: Do something with the status

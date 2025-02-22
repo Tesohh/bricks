@@ -21,8 +21,12 @@ impl OverrideDatabase {
         Self(HashMap::new())
     }
 
-    pub fn push(&mut self, key: String, ov: Overrides) {
+    pub fn insert(&mut self, key: String, ov: Overrides) {
         self.0.insert(key, ov);
+    }
+
+    pub fn get(&self, key: &str) -> Option<&Overrides> {
+        self.0.get(key)
     }
 }
 

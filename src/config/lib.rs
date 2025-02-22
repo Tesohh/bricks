@@ -4,7 +4,7 @@ use anyhow::Result;
 use home::home_dir;
 use serde::{Deserialize, Serialize};
 
-use super::overrides::Overrides;
+use super::overrides::{OverrideDatabase, Overrides};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum LibKind {
@@ -24,8 +24,9 @@ pub struct Lib {
 }
 
 impl Lib {
-    pub fn headers(&self, name: &str) -> Result<String> {
-        let include_dir = if let Some(overrides) = &self.overrides {
+    pub fn headers(&self, name: &str, override_db: &OverrideDatabase) -> Result<String> {
+        let overrides = override_db.get(name);
+        let include_dir = if let Some(overrides) = overrides {
             overrides
                 .include_dir
                 .as_ref()
@@ -50,8 +51,9 @@ impl Lib {
         }
     }
 
-    pub fn lib_links(&self, name: &str) -> Result<String> {
-        let lib_dir = if let Some(overrides) = &self.overrides {
+    pub fn lib_links(&self, name: &str, override_db: &OverrideDatabase) -> Result<String> {
+        let overrides = override_db.get(name);
+        let lib_dir = if let Some(overrides) = overrides {
             overrides
                 .lib_dir
                 .as_ref()

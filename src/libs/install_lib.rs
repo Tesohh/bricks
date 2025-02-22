@@ -83,7 +83,6 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<O
             };
             build::build(&foreign_config, build_cmd)?;
 
-            // TODO: Return the overrides!
             let overrides = match lib.overrides.clone() {
                 Some(v) => Some(v),
                 None => foreign_config.brick.overrides,

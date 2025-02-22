@@ -5,8 +5,7 @@ pub mod link;
 pub mod tools;
 
 use std::{
-    fs::{self, File},
-    io::Read,
+    fs::{self},
     path::{Path, PathBuf},
 };
 
@@ -55,7 +54,6 @@ pub fn build(config: &Config, build_command: BuildCommand) -> Result<Option<Path
         compile_db.push(compile_cmd);
     }
 
-    // TODO: Needs to tkae the compile_db!
     let build_result = match config.brick.kind {
         BrickKind::Binary => link::binary(
             &config.libs,
@@ -63,6 +61,7 @@ pub fn build(config: &Config, build_command: BuildCommand) -> Result<Option<Path
             &Path::new(&build_command.path)
                 .join("build")
                 .join(&config.brick.name),
+            &override_db,
             build_command.silent,
         ),
         BrickKind::Library => link::library(
@@ -72,6 +71,7 @@ pub fn build(config: &Config, build_command: BuildCommand) -> Result<Option<Path
                 .join("build")
                 .join("lib")
                 .join(String::from("lib") + &config.brick.name + ".a"),
+            &override_db,
             build_command.silent,
         ),
     };

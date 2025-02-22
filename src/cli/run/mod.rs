@@ -17,7 +17,7 @@ pub fn run(config: Config, run_command: RunCommand) -> Result<()> {
     }
 
     let build_path = match build::build(
-        config,
+        &config,
         BuildCommand {
             force: run_command.force,
             path: run_command.path,

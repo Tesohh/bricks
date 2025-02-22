@@ -17,7 +17,7 @@ use crate::{
     config::{brick::BrickKind, Config},
 };
 
-pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathBuf>> {
+pub fn build(config: &Config, build_command: BuildCommand) -> Result<Option<PathBuf>> {
     let mut compile_paths = vec![];
 
     let src_path = Path::new(&build_command.path).join("src");
@@ -36,7 +36,7 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
 
     let build_result = match config.brick.kind {
         BrickKind::Binary => link::binary(
-            config.libs,
+            &config.libs,
             &compile_paths,
             &Path::new(&build_command.path)
                 .join("build")
@@ -44,7 +44,7 @@ pub fn build(config: Config, build_command: BuildCommand) -> Result<Option<PathB
             build_command.silent,
         ),
         BrickKind::Library => link::library(
-            config.libs,
+            &config.libs,
             &compile_paths,
             &Path::new(&build_command.path)
                 .join("build")

@@ -11,7 +11,7 @@ use crate::{cli::pretty, config::lib::Lib};
 use super::tools::{get_archiver, get_compiler};
 
 pub fn binary(
-    libs: HashMap<String, Lib>,
+    libs: &HashMap<String, Lib>,
     compile_paths: &[PathBuf],
     target: &Path,
     silent: bool,
@@ -27,7 +27,7 @@ pub fn binary(
         cmd = cmd.arg(path);
     }
 
-    for (name, lib) in &libs {
+    for (name, lib) in libs {
         cmd = cmd.args(lib.lib_links(name)?.split(" "));
         cmd = cmd.args(lib.headers(name)?.split(" "));
     }
@@ -40,7 +40,7 @@ pub fn binary(
 }
 
 pub fn library(
-    libs: HashMap<String, Lib>,
+    libs: &HashMap<String, Lib>,
     compile_paths: &[PathBuf],
     target: &Path,
     silent: bool,
@@ -56,7 +56,7 @@ pub fn library(
         cmd = cmd.arg(path);
     }
 
-    for (name, lib) in &libs {
+    for (name, lib) in libs {
         cmd = cmd.args(lib.lib_links(name)?.split(" "));
         cmd = cmd.args(lib.headers(name)?.split(" "));
     }

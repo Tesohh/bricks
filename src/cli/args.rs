@@ -78,7 +78,7 @@ pub struct InstallCommand {
 #[command(name = "bricks")]
 #[command(bin_name = "bricks")]
 #[command(styles = CLAP_STYLING)]
-/// Gissy
+/// build system and package manager for C/C++
 pub struct Args {
     #[clap(subcommand)]
     pub sub: SubCommand,

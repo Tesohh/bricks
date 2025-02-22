@@ -10,19 +10,21 @@ use crate::{
     },
     config::{
         lib::{Lib, LibKind, LibPathificationError},
+        overrides::Overrides,
         Config,
     },
 };
 
 use super::{copy_dir::copy_dir, git_utils::RepositoryExt};
 
-pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<()> {
+pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<Option<Overrides>> {
     if !silent {
         pretty::msg("install", name);
     }
     match lib.kind {
         LibKind::System => {
             // you don't need to do anything here.
+            Ok(None)
         }
         LibKind::Git => {
             let Some(repo_uri) = lib.normalize_repo() else {
@@ -32,7 +34,8 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<(
             // if the library version is already there, use that (and dont do anything)
             let versioned_path = lib.pathify_repo()?;
             if !force && fs::exists(&versioned_path)? {
-                return Ok(());
+                // TODO: return the Overrides!
+                return Ok(None);
             }
 
             // check if the FULL lib already exists
@@ -63,7 +66,7 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<(
             let foreign_config: Config = toml::from_str(&foreign_config_file)?;
             // run bricks install
             install::install(
-                foreign_config,
+                &foreign_config,
                 InstallCommand {
                     path: String::from(""),
                     force,
@@ -72,15 +75,20 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<(
             )?;
 
             // run bricks build
-            let foreign_config: Config = toml::from_str(&foreign_config_file)?; // PERF: come on man
             let build_cmd = BuildCommand {
                 force: true,
                 emit_compile_commands: false,
                 path: String::from(versioned_path.to_string_lossy()),
                 silent: true,
             };
-            build::build(foreign_config, build_cmd)?;
+            build::build(&foreign_config, build_cmd)?;
+
+            // TODO: Return the overrides!
+            let overrides = match lib.overrides.clone() {
+                Some(v) => Some(v),
+                None => foreign_config.brick.overrides,
+            };
+            Ok(overrides)
         }
-    };
-    Ok(())
+    }
 }

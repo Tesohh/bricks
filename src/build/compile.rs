@@ -9,7 +9,7 @@ use walkdir::DirEntry;
 
 use crate::{
     cli::{commandext::CommandExt, pretty},
-    config::Config,
+    config::{overrides::OverrideDatabase, Config},
 };
 
 use super::{compile_commands::CompileCommand, tools::get_compiler};
@@ -36,6 +36,7 @@ pub fn src_to_build_path(path: &Path) -> PathBuf {
 pub fn compile(
     config: &Config,
     file: walkdir::Result<DirEntry>,
+    override_db: &OverrideDatabase,
     force: bool,
     silent: bool,
 ) -> Result<Option<(PathBuf, CompileCommand)>> {
@@ -72,6 +73,7 @@ pub fn compile(
         .stderr(Stdio::inherit());
 
     for (name, lib) in &config.libs {
+        // HERE: pass the overridedb
         cmd.args(lib.headers(name)?.split_whitespace());
     }
 

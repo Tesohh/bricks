@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Overrides {
     /// the command that will be used to build the library instead of `bricks build`
     pub build: Option<String>,
@@ -12,7 +12,7 @@ pub struct Overrides {
     pub lib_dir: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct OverrideDatabase(HashMap<String, Overrides>);
 

@@ -68,7 +68,7 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<O
             install::install(
                 &foreign_config,
                 InstallCommand {
-                    path: String::from(""),
+                    path: String::from(versioned_path.to_string_lossy()),
                     force,
                     silent: true,
                 },

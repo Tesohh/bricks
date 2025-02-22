@@ -5,7 +5,8 @@ pub mod link;
 pub mod tools;
 
 use std::{
-    fs,
+    fs::{self, File},
+    io::Read,
     path::{Path, PathBuf},
 };
 
@@ -14,7 +15,7 @@ use compile_commands::CompileDatabase;
 
 use crate::{
     cli::{args::BuildCommand, pretty},
-    config::{brick::BrickKind, Config},
+    config::{brick::BrickKind, overrides::OverrideDatabase, Config},
 };
 
 pub fn build(config: &Config, build_command: BuildCommand) -> Result<Option<PathBuf>> {
@@ -22,11 +23,31 @@ pub fn build(config: &Config, build_command: BuildCommand) -> Result<Option<Path
 
     let src_path = Path::new(&build_command.path).join("src");
 
+    let override_path = Path::new(&build_command.path)
+        .join("build")
+        .join("overrides.json");
+    let override_file = match fs::read_to_string(override_path) {
+        Ok(v) => v,
+        Err(_) => {
+            pretty::warning(format!(
+                "no `build/overrides.json` found in {}. defaulting to no overrides.",
+                &build_command.path
+            ));
+            "{}".to_string()
+        }
+    };
+    let override_db: OverrideDatabase = serde_json::from_str(&override_file)?;
+
     let mut compile_db = CompileDatabase::new();
 
     for entry in walkdir::WalkDir::new(&src_path).follow_links(true) {
-        let Some((path, compile_cmd)) =
-            compile::compile(&config, entry, build_command.force, build_command.silent)?
+        let Some((path, compile_cmd)) = compile::compile(
+            config,
+            entry,
+            &override_db,
+            build_command.force,
+            build_command.silent,
+        )?
         else {
             continue;
         };
@@ -34,6 +55,7 @@ pub fn build(config: &Config, build_command: BuildCommand) -> Result<Option<Path
         compile_db.push(compile_cmd);
     }
 
+    // TODO: Needs to tkae the compile_db!
     let build_result = match config.brick.kind {
         BrickKind::Binary => link::binary(
             &config.libs,

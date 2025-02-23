@@ -21,6 +21,7 @@ cd project_name
 
 To add to an existing project:
 - Add the basic config template to `brick.toml` in your project root
+- See ()
 
 After adding all dependencies to the `brick.toml` file, run `bricks install`
 
@@ -37,17 +38,6 @@ edition = "c99"
 [libs.raylib]
 kind = "system"
 ```
-
-If you need to use the `.clangd` file,
-please add your configuration to `clangd.yml`.
-`bricks` will manage it for you.
-make sure `CompileFlags` is the last option, so `bricks` can add headers automatically
-
-## Why?
-I would like to make more stuff in C, but I hate the tooling around it.. so I wanted to make my own
-
-I'm making this mostly for myself, but if other libraries use it, that would be great.
-`bricks` is designed so that it can be used without interfering with other build systems
 
 ## Package management
 `bricks` works by 

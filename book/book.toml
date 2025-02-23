@@ -1,0 +1,6 @@
+[book]
+authors = ["Simone Tesini"]
+language = "en"
+multilingual = false
+src = "src"
+title = "bricks guide"

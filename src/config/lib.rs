@@ -25,67 +25,66 @@ pub struct Lib {
 
 impl Lib {
     pub fn headers(&self, name: &str, override_db: &OverrideDatabase) -> Result<String> {
-        let overrides = override_db.get(name);
-        let include_dir = if let Some(overrides) = overrides {
-            overrides
-                .include_dir
-                .as_ref()
-                .map(|include_dir| include_dir.to_string())
-        } else {
-            None
-        };
-        if let Some(include_dir) = include_dir {
-            // WARN: using pathify repo might not be the best idea here, because what if the user
-            // is using a non git libraruy with overrides?
+        match self.kind {
+            LibKind::System => {
+                let output = Command::new("pkg-config")
+                    .arg(name)
+                    .arg("--cflags")
+                    .output()?;
 
-            Ok(format!(
-                "-I{}",
-                self.pathify_repo()?.join(include_dir).display(),
-            ))
-        } else {
-            match self.kind {
-                LibKind::System => {
-                    let output = Command::new("pkg-config")
-                        .arg(name)
-                        .arg("--cflags")
-                        .output()?;
-
-                    Ok(String::from_utf8(output.stdout)?.trim_end().to_string())
-                }
-                LibKind::Git => todo!(),
+                Ok(String::from_utf8(output.stdout)?.trim_end().to_string())
+            }
+            LibKind::Git => {
+                let overrides = override_db.get(name);
+                let include_dir = if let Some(overrides) = overrides {
+                    overrides
+                        .include_dir
+                        .as_ref()
+                        .map(|include_dir| include_dir.to_string())
+                } else {
+                    None
+                };
+                let include_dir = match include_dir {
+                    Some(v) => v,
+                    None => "build/include".into(),
+                };
+                Ok(format!(
+                    "-I{}",
+                    self.pathify_repo()?.join(include_dir).display(),
+                ))
             }
         }
     }
 
     pub fn lib_links(&self, name: &str, override_db: &OverrideDatabase) -> Result<String> {
-        let overrides = override_db.get(name);
-        let lib_dir = if let Some(overrides) = overrides {
-            overrides
-                .lib_dir
-                .as_ref()
-                .map(|include_dir| include_dir.to_string())
-        } else {
-            None
-        };
-        if let Some(lib_dir) = lib_dir {
-            // WARN: using pathify repo might not be the best idea here, because what if the user
-            // is using a non git libraruy with overrides?
-            Ok(format!(
-                "-L{} -l{}",
-                self.pathify_repo()?.join(lib_dir).display(),
-                name,
-            ))
-        } else {
-            match self.kind {
-                LibKind::System => {
-                    let output = Command::new("pkg-config")
-                        .arg(name)
-                        .args(["--libs", "--static"])
-                        .output()?;
+        match self.kind {
+            LibKind::System => {
+                let output = Command::new("pkg-config")
+                    .arg(name)
+                    .args(["--libs", "--static"])
+                    .output()?;
 
-                    Ok(String::from_utf8(output.stdout)?.trim_end().to_string())
-                }
-                LibKind::Git => todo!(),
+                Ok(String::from_utf8(output.stdout)?.trim_end().to_string())
+            }
+            LibKind::Git => {
+                let overrides = override_db.get(name);
+                let lib_dir = if let Some(overrides) = overrides {
+                    overrides
+                        .lib_dir
+                        .as_ref()
+                        .map(|include_dir| include_dir.to_string())
+                } else {
+                    None
+                };
+                let lib_dir = match lib_dir {
+                    Some(v) => v,
+                    None => "build/lib".into(),
+                };
+                Ok(format!(
+                    "-L{} -l{}",
+                    self.pathify_repo()?.join(lib_dir).display(),
+                    name,
+                ))
             }
         }
     }
@@ -236,6 +235,38 @@ mod tests {
                 .join("github.com-Tesohh-strings")
                 .join("2020")
                 .to_path_buf()
+        );
+    }
+
+    #[test]
+    fn git_headers_and_lib_links() {
+        let lib = Lib {
+            kind: LibKind::Git,
+            repo: Some("github.com/Tesohh/strings.git".to_string()),
+            version: Some("2020".to_string()),
+            overrides: None,
+        };
+        let override_db = OverrideDatabase::new();
+        assert_eq!(
+            lib.headers("strings", &override_db).unwrap(),
+            "-I".to_string()
+                + &Path::new(&home_dir().unwrap())
+                    .join(".bricks/libs")
+                    .join("github.com-Tesohh-strings/2020")
+                    .join("build/include")
+                    .display()
+                    .to_string()
+        );
+        assert_eq!(
+            lib.lib_links("strings", &override_db).unwrap(),
+            "-L".to_string()
+                + &Path::new(&home_dir().unwrap())
+                    .join(".bricks/libs")
+                    .join("github.com-Tesohh-strings/2020")
+                    .join("build/lib")
+                    .display()
+                    .to_string()
+                + " -lstrings"
         );
     }
 

@@ -103,7 +103,7 @@ pub fn build(
         serde_json::to_writer(comp_file, &compile_db)?;
     };
 
-    include::copy_headers(&src_path)?;
+    include::copy_headers(&src_path, &config.brick.name)?;
 
     build_result
 }

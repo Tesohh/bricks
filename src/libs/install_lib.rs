@@ -75,18 +75,24 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<O
             )?;
 
             // run bricks build
+            // PERF: remove clone
+            let overrides = match lib.overrides.clone() {
+                Some(v) => Some(v),
+                None => foreign_config.brick.overrides.clone(), // PERF: remove clone
+            };
+
             let build_cmd = BuildCommand {
                 force: true,
                 emit_compile_commands: false,
                 path: String::from(versioned_path.to_string_lossy()),
                 silent: true,
             };
-            build::build(&foreign_config, build_cmd)?;
-
-            let overrides = match lib.overrides.clone() {
-                Some(v) => Some(v),
-                None => foreign_config.brick.overrides,
+            let override_build = match overrides {
+                Some(ref v) => &v.build,
+                None => &None,
             };
+            build::build(&foreign_config, build_cmd, override_build.clone())?;
+
             Ok(overrides)
         }
     }

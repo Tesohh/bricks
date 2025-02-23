@@ -7,9 +7,10 @@ pub mod tools;
 use std::{
     fs::{self},
     path::{Path, PathBuf},
+    process::Command,
 };
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use compile_commands::CompileDatabase;
 
 use crate::{
@@ -17,7 +18,20 @@ use crate::{
     config::{brick::BrickKind, overrides::OverrideDatabase, Config},
 };
 
-pub fn build(config: &Config, build_command: BuildCommand) -> Result<Option<PathBuf>> {
+pub fn build(
+    config: &Config,
+    build_command: BuildCommand,
+    override_cmd: Option<String>,
+) -> Result<Option<PathBuf>> {
+    if let Some(override_cmd) = override_cmd {
+        let mut words = override_cmd.split_whitespace();
+        let program = words.next().context("build command is an empty string")?;
+        let args: Vec<_> = words.collect();
+
+        let _ = Command::new(program).args(args).status()?;
+        return Ok(None);
+    }
+
     let mut compile_paths = vec![];
 
     let src_path = Path::new(&build_command.path).join("src");

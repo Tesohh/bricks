@@ -15,7 +15,12 @@ fn _main() -> Result<()> {
 
     match args.sub {
         SubCommand::Build(build_command) => {
-            match build::build(&read_config(&args.config)?, build_command) {
+            let config = read_config(&args.config)?;
+            let override_build = match config.brick.overrides {
+                Some(ref v) => &v.build,
+                None => &None,
+            };
+            match build::build(&config, build_command, override_build.clone()) {
                 Ok(_) => Ok(()),
                 Err(err) => Err(err),
             }

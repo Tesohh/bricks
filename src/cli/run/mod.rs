@@ -16,6 +16,11 @@ pub fn run(config: Config, run_command: RunCommand) -> Result<()> {
         bail!("cannot run a library")
     }
 
+    let override_build = match config.brick.overrides {
+        Some(ref v) => &v.build,
+        None => &None,
+    };
+
     let build_path = match build::build(
         &config,
         BuildCommand {
@@ -24,6 +29,7 @@ pub fn run(config: Config, run_command: RunCommand) -> Result<()> {
             emit_compile_commands: true,
             silent: false,
         },
+        override_build.clone(),
     )? {
         Some(p) => p,
         None => bail!("build path was not returned"),

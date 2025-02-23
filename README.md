@@ -1,6 +1,8 @@
 # bricks
 build system and package manager for C/C++
 
+## Documentation
+Go to the [bricks guide](https://tesohh.github.io/bricks/)
 
 ## Installing
 For now the only way to use `bricks` is by building from source.

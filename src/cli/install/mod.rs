@@ -3,6 +3,7 @@ use std::{fs, path::Path};
 use anyhow::{bail, Result};
 
 use crate::{
+    cli::pretty,
     config::{overrides::OverrideDatabase, Config},
     libs::install_lib::install_lib,
 };
@@ -20,7 +21,7 @@ pub fn install(config: &Config, install_command: InstallCommand) -> Result<()> {
             Ok(_) => {}
             Err(err) => {
                 bail!(
-                    "during install.{}\nresolve the problem and then run `bricks install --force`",
+                    "during install. {}\nresolve the problem and then run `bricks install --force`",
                     err
                 )
             }
@@ -30,8 +31,20 @@ pub fn install(config: &Config, install_command: InstallCommand) -> Result<()> {
     let override_path = Path::new(&install_command.path)
         .join("build")
         .join("overrides.json");
+    match fs::create_dir_all(override_path.parent().unwrap()) {
+        Ok(_) => {}
+        Err(err) => {
+            dbg!(err);
+        }
+    };
     let override_file = fs::File::create(override_path)?;
     serde_json::to_writer(override_file, &override_db)?;
+
+    if !install_command.silent {
+        pretty::info("done!");
+        pretty::info("you might need to run `bricks build` before seeing headers in your editor");
+        pretty::info("if you are still having issues, try `bricks install --force`");
+    }
 
     Ok(())
 }

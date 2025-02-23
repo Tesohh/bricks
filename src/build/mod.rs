@@ -28,6 +28,8 @@ pub fn build(
         let program = words.next().context("build command is an empty string")?;
         let args: Vec<_> = words.collect();
 
+        pretty::msg("build", &override_cmd);
+
         let _ = Command::new(program).args(args).status()?;
         return Ok(None);
     }

@@ -1,6 +1,6 @@
 use std::process::Command;
 
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 
 use crate::{
     build,
@@ -32,7 +32,28 @@ pub fn run(config: Config, run_command: RunCommand) -> Result<()> {
         override_build.clone(),
     )? {
         Some(p) => p,
-        None => bail!("build path was not returned"),
+        None => {
+            let override_run = match config.brick.overrides {
+                Some(v) => v.run,
+                None => None,
+            };
+
+            match override_run {
+                Some(cmd) => {
+                    let mut words = cmd.split_whitespace();
+                    let program = words.next().context("run command is an empty string")?;
+                    let args: Vec<_> = words.collect();
+
+                    pretty::msg("run", &cmd);
+
+                    let _ = Command::new(program).args(args).status()?;
+                    return Ok(());
+                }
+                None => {
+                    bail!("build path was not returned, and a `run` override was not specified")
+                }
+            }
+        }
     };
 
     pretty::msg("run", build_path.display());

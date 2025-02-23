@@ -283,6 +283,7 @@ mod tests {
             "strings".into(),
             Overrides {
                 build: None,
+                run: None,
                 include_dir: Some("evil_build/evil_include".to_string()),
                 lib_dir: Some("evil_build/evil_lib".to_string()),
             },

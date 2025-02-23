@@ -6,6 +6,8 @@ use serde::{Deserialize, Serialize};
 pub struct Overrides {
     /// the command that will be used to build the library instead of `bricks build`
     pub build: Option<String>,
+    /// the command that will be used to run the binary instead of `bricks run`
+    pub run: Option<String>,
     /// the directory where the includes (headers) are, instead of the default <lib>/build/include
     pub include_dir: Option<String>,
     /// the directory where the compiled objects are, instead of the default <lib>/build/lib

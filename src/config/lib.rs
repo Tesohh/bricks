@@ -35,7 +35,13 @@ impl Lib {
             None
         };
         if let Some(include_dir) = include_dir {
-            Ok(include_dir)
+            // WARN: using pathify repo might not be the best idea here, because what if the user
+            // is using a non git libraruy with overrides?
+
+            Ok(format!(
+                "-I{}",
+                self.pathify_repo()?.join(include_dir).display(),
+            ))
         } else {
             match self.kind {
                 LibKind::System => {
@@ -62,7 +68,13 @@ impl Lib {
             None
         };
         if let Some(lib_dir) = lib_dir {
-            Ok(lib_dir)
+            // WARN: using pathify repo might not be the best idea here, because what if the user
+            // is using a non git libraruy with overrides?
+            Ok(format!(
+                "-L{} -l{}",
+                self.pathify_repo()?.join(lib_dir).display(),
+                name,
+            ))
         } else {
             match self.kind {
                 LibKind::System => {
@@ -224,6 +236,51 @@ mod tests {
                 .join("github.com-Tesohh-strings")
                 .join("2020")
                 .to_path_buf()
+        );
+    }
+
+    #[test]
+    fn overrides() {
+        let lib = Lib {
+            kind: LibKind::Git,
+            repo: Some("github.com/Tesohh/strings.git".to_string()),
+            version: Some("2020".to_string()),
+            overrides: None,
+        };
+        let mut override_db = OverrideDatabase::new();
+        override_db.insert(
+            "strings".into(),
+            Overrides {
+                build: None,
+                include_dir: Some("evil_build/evil_include".to_string()),
+                lib_dir: Some("evil_build/evil_lib".to_string()),
+            },
+        );
+
+        assert_eq!(
+            lib.headers("strings", &override_db).unwrap(),
+            "-I".to_string()
+                + &Path::new(&home_dir().unwrap())
+                    .join(".bricks")
+                    .join("libs")
+                    .join("github.com-Tesohh-strings")
+                    .join("2020")
+                    .join("evil_build/evil_include")
+                    .display()
+                    .to_string()
+        );
+        assert_eq!(
+            lib.lib_links("strings", &override_db).unwrap(),
+            "-L".to_string()
+                + &Path::new(&home_dir().unwrap())
+                    .join(".bricks")
+                    .join("libs")
+                    .join("github.com-Tesohh-strings")
+                    .join("2020")
+                    .join("evil_build/evil_lib")
+                    .display()
+                    .to_string()
+                + " -lstrings"
         );
     }
 }

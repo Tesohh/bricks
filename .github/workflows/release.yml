@@ -39,8 +39,9 @@ jobs:
         if: runner.os == 'macOS'
         run: |
             brew install openssl
-            echo "OPENSSL_DIR=$(brew --prefix openssl)" >> $GITHUB_ENV
             echo "PKG_CONFIG_PATH=$(brew --prefix openssl)/lib/pkgconfig" >> $GITHUB_ENV
+            echo "LIBRARY_PATH=$(brew --prefix openssl)/lib" >> $GITHUB_ENV
+            echo "CPATH=$(brew --prefix openssl)/include" >> $GITHUB_ENV
  
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable

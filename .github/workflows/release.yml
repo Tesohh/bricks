@@ -36,12 +36,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install openssl on macos
+        if: ${{ matrix.runner }} == "macos-latest"
         run: |
-          if [[ "${{matrix.runner}}" == "macos-latest" ]]; then
             brew install openssl
             echo "OPENSSL_DIR=$(brew --prefix openssl)" >> $GITHUB_ENV
             echo "PKG_CONFIG_PATH=$(brew --prefix openssl)/lib/pkgconfig" >> $GITHUB_ENV
-          fi
  
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable

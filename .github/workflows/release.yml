@@ -24,7 +24,7 @@ jobs:
             runner: windows-latest
             target: x86_64-pc-windows-msvc
           - name: macos-amd64
-            runner: macos-latest
+            runner: macos-13
             target: x86_64-apple-darwin
           - name: macos-arm64
             runner: macos-latest
@@ -43,10 +43,6 @@ jobs:
             echo "OPENSSL_INCLUDE_DIR=$(brew --prefix openssl)/include" >> $GITHUB_ENV
             echo "OPENSSL_LIB_DIR=$(brew --prefix openssl)/lib" >> $GITHUB_ENV
             echo "PKG_CONFIG_PATH=$(brew --prefix openssl)/lib/pkgconfig" >> $GITHUB_ENV
-
-      - name: Set macOS Deployment Target (only for macos-amd64)
-        if: matrix.name == 'macos-amd64'
-        run: echo "MACOSX_DEPLOYMENT_TARGET=10.12" >> $GITHUB_ENV
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable

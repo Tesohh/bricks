@@ -10,7 +10,6 @@ anstyle-owo-colors = "2.0.3"
 anyhow = "1.0.95"
 clap = { version = "4.5.27", features = ["derive"] }
 clap_derive = { version = "4.0.0-rc.1" }
-openssl = { version = "0.10", features = ["vendored"] }
 git2 = {version = "0.20.0", features = ["https"]}
 home = "0.5.11"
 owo-colors = "4.1.0"

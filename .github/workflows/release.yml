@@ -73,3 +73,29 @@ jobs:
           # Move the built binary where you want it
           mkdir release
           mv "${BIN_OUTPUT}" "./release/${BIN_RELEASE}"
+            - name: Upload Artifacts
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-binaries
+          path: release/*
+  release:
+    needs: build  # Ensure this runs after all builds finish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Built Binaries
+        uses: actions/download-artifact@v3
+        with:
+          name: release-binaries
+          path: release
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: release/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

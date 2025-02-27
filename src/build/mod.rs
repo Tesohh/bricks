@@ -6,8 +6,9 @@ pub mod tools;
 
 use std::{
     fs::{self},
+    os,
     path::{Path, PathBuf},
-    process::Command,
+    process::{Command, Stdio},
 };
 
 use anyhow::{Context, Result};
@@ -24,13 +25,27 @@ pub fn build(
     override_cmd: Option<String>,
 ) -> Result<Option<PathBuf>> {
     if let Some(override_cmd) = override_cmd {
-        let mut words = override_cmd.split_whitespace();
-        let program = words.next().context("build command is an empty string")?;
-        let args: Vec<_> = words.collect();
+        // let words = override_cmd.split_whitespace();
+        // let args: Vec<_> = words.collect();
 
         pretty::msg("build", &override_cmd);
 
-        let _ = Command::new(program).args(args).status()?;
+        let mut cmd = match std::env::consts::OS {
+            "windows" => {
+                let mut cmd = Command::new("cmd");
+                cmd.arg("/C");
+                cmd
+            }
+            _ => {
+                let mut cmd = Command::new("sh");
+                cmd.arg("-c");
+                cmd
+            }
+        };
+        cmd.current_dir(build_command.path);
+        cmd.arg(override_cmd);
+        cmd.status()?;
+
         return Ok(None);
     }
 

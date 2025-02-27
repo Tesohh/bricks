@@ -32,7 +32,6 @@ pub fn binary(
     }
 
     for (name, lib) in libs {
-        // HERE: get overridedb
         cmd = cmd.args(lib.lib_links(name, override_db)?.split(" "));
         cmd = cmd.args(lib.headers(name, override_db)?.split(" "));
     }

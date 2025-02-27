@@ -10,3 +10,4 @@
 
 # Advanced features
 - [Overrides](overrides.md)
+- [Platforms](platforms.md)

@@ -71,7 +71,6 @@ pub fn library(
         cmd = cmd.args(lib.headers(name, override_db)?.split(" "));
     }
 
-    // TODO: Do something with the status
     let _status = cmd.status()?;
 
     Ok(Some(target.to_path_buf()))

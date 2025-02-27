@@ -73,7 +73,6 @@ jobs:
           # Move the built binary where you want it
           mkdir release
           mv "${BIN_OUTPUT}" "./release/${BIN_RELEASE}"
-            - name: Upload Artifacts
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:

@@ -6,6 +6,7 @@ use crate::{
     build,
     cli::{
         args::{BuildCommand, InstallCommand},
+        init::templates,
         install, pretty,
     },
     config::{
@@ -62,7 +63,19 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<O
 
             // in the library's directory:
             // read the config file
-            let foreign_config_file = fs::read_to_string(versioned_path.join("brick.toml"))?;
+            let foreign_config_file = match fs::read_to_string(versioned_path.join("brick.toml")) {
+                Ok(v) => v,
+                Err(err) => {
+                    pretty::warning(format!(
+                        "got error while reading {}: {}",
+                        versioned_path.join("brick.toml").display(),
+                        err
+                    ));
+                    pretty::warning("fallback to default config");
+                    templates::config(name, "library", "c", "unknown").to_string()
+                }
+            };
+
             let foreign_config: Config = toml::from_str(&foreign_config_file)?;
             // run bricks install
             install::install(

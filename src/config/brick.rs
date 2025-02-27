@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use serde::{Deserialize, Serialize};
 
-use super::overrides::Overrides;
+use super::{overrides::Overrides, platform::Platform};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum BrickKind {
@@ -49,9 +49,33 @@ pub struct Brick {
     pub edition: String,
     #[serde(default = "default_cflags")]
     pub cflags: String,
+    #[serde(default = "default_ldflags")]
+    pub ldflags: String,
     pub overrides: Option<Overrides>,
+
+    macos: Option<Platform>,
+    windows: Option<Platform>,
+    linux: Option<Platform>,
+}
+
+impl Brick {
+    pub fn platform(&self) -> Option<&Platform> {
+        if cfg!(target_os = "linux") {
+            self.linux.as_ref()
+        } else if cfg!(target_os = "macos") {
+            self.macos.as_ref()
+        } else if cfg!(target_os = "windows") {
+            self.windows.as_ref()
+        } else {
+            None
+        }
+    }
 }
 
 fn default_cflags() -> String {
+    "".into()
+}
+
+fn default_ldflags() -> String {
     "".into()
 }

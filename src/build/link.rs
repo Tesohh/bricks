@@ -18,6 +18,7 @@ pub fn binary(
     compile_paths: &[PathBuf],
     target: &Path,
     override_db: &OverrideDatabase,
+    ldflags: &str,
     silent: bool,
 ) -> Result<Option<PathBuf>> {
     if !silent {
@@ -26,6 +27,8 @@ pub fn binary(
 
     let mut cmd = &mut Command::new(get_compiler());
     cmd = cmd.stderr(Stdio::inherit());
+    dbg!(ldflags);
+    cmd.args(ldflags.split_whitespace().collect::<Vec<&str>>());
 
     for path in compile_paths {
         cmd = cmd.arg(path);
@@ -48,6 +51,7 @@ pub fn library(
     compile_paths: &[PathBuf],
     target: &Path,
     override_db: &OverrideDatabase,
+    ldflags: &str,
     silent: bool,
 ) -> Result<Option<PathBuf>> {
     if !silent {
@@ -56,6 +60,7 @@ pub fn library(
 
     let mut cmd = &mut Command::new(get_archiver());
     cmd = cmd.stderr(Stdio::inherit()).arg("crus").arg(target);
+    cmd.args(ldflags.split_whitespace().collect::<Vec<&str>>());
 
     for path in compile_paths {
         cmd = cmd.arg(path);

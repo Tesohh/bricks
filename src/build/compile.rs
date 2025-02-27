@@ -63,9 +63,18 @@ pub fn compile(
     fs::create_dir_all(build_parent)?;
     fs::create_dir_all(build_parent.join("lib"))?;
 
+    let mut cflags = config.brick.cflags.to_string();
+    cflags += &match config.brick.platform() {
+        Some(platform) => match &platform.cflags {
+            Some(v) => format!(" {}", v),
+            None => "".to_string(),
+        },
+        None => "".to_string(),
+    };
+
     let mut cmd = Command::new(get_compiler());
     cmd.arg(format!("-std={}", config.brick.edition))
-        .args(config.brick.cflags.split_whitespace())
+        .args(cflags.split_whitespace())
         .arg("-c")
         .arg(file.path())
         .arg("-o")
@@ -73,7 +82,6 @@ pub fn compile(
         .stderr(Stdio::inherit());
 
     for (name, lib) in &config.libs {
-        // HERE: pass the overridedb
         cmd.args(lib.headers(name, override_db)?.split_whitespace());
     }
 

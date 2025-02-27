@@ -6,12 +6,11 @@ pub mod tools;
 
 use std::{
     fs::{self},
-    os,
     path::{Path, PathBuf},
-    process::{Command, Stdio},
+    process::Command,
 };
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use compile_commands::CompileDatabase;
 
 use crate::{
@@ -25,9 +24,6 @@ pub fn build(
     override_cmd: Option<String>,
 ) -> Result<Option<PathBuf>> {
     if let Some(override_cmd) = override_cmd {
-        // let words = override_cmd.split_whitespace();
-        // let args: Vec<_> = words.collect();
-
         pretty::msg("build", &override_cmd);
 
         let mut cmd = match std::env::consts::OS {
@@ -85,6 +81,15 @@ pub fn build(
         compile_db.push(compile_cmd);
     }
 
+    let mut ldflags = config.brick.ldflags.to_string();
+    ldflags += &match config.brick.platform() {
+        Some(platform) => match &platform.ldflags {
+            Some(v) => format!(" {}", v),
+            None => "".to_string(),
+        },
+        None => "".to_string(),
+    };
+
     let build_result = match config.brick.kind {
         BrickKind::Binary => link::binary(
             &config.libs,
@@ -93,6 +98,7 @@ pub fn build(
                 .join("build")
                 .join(&config.brick.name),
             &override_db,
+            &ldflags,
             build_command.silent,
         ),
         BrickKind::Library => link::library(
@@ -103,6 +109,7 @@ pub fn build(
                 .join("lib")
                 .join(String::from("lib") + &config.brick.name + ".a"),
             &override_db,
+            &ldflags,
             build_command.silent,
         ),
     };

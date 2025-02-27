@@ -2,6 +2,7 @@ pub mod brick;
 pub mod compiler;
 pub mod lib;
 pub mod overrides;
+pub mod platform;
 pub mod read;
 
 use std::collections::HashMap;

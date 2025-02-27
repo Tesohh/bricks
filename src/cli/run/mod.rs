@@ -25,7 +25,7 @@ pub fn run(config: Config, run_command: RunCommand) -> Result<()> {
         &config,
         BuildCommand {
             force: run_command.force,
-            path: run_command.path,
+            path: run_command.path.clone(),
             emit_compile_commands: true,
             silent: false,
         },
@@ -39,14 +39,24 @@ pub fn run(config: Config, run_command: RunCommand) -> Result<()> {
             };
 
             match override_run {
-                Some(cmd) => {
-                    let mut words = cmd.split_whitespace();
-                    let program = words.next().context("run command is an empty string")?;
-                    let args: Vec<_> = words.collect();
+                Some(override_run_cmd) => {
+                    pretty::msg("run", &override_run_cmd);
 
-                    pretty::msg("run", &cmd);
-
-                    let _ = Command::new(program).args(args).status()?;
+                    let mut cmd = match std::env::consts::OS {
+                        "windows" => {
+                            let mut cmd = Command::new("cmd");
+                            cmd.arg("/C");
+                            cmd
+                        }
+                        _ => {
+                            let mut cmd = Command::new("sh");
+                            cmd.arg("-c");
+                            cmd
+                        }
+                    };
+                    cmd.current_dir(&run_command.path);
+                    cmd.arg(override_run_cmd);
+                    cmd.status()?;
                     return Ok(());
                 }
                 None => {

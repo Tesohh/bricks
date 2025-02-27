@@ -8,6 +8,10 @@ on:
 env:
   # The project name specified in your Cargo.toml
   PROJECT_NAME: bricks
+
+permissions:
+  contents: write
+
 jobs:
   build:
     # Set the job to run on the platform specified by the matrix below

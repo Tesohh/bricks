@@ -1,6 +1,6 @@
 use std::process::Command;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 
 use crate::{
     build,

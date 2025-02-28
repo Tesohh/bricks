@@ -4,12 +4,16 @@
 - `pkg-config`
 - a c compiler
 - an archiver such as `ar`
+- rust toolchain if building from source or installing through cargo
 
 ## Prebuilt binary
-Coming soon!
+- Visit [https://github.com/Tesohh/bricks/releases](https://github.com/Tesohh/bricks/releases)
+- download your preferred version.
 
 ## Through cargo
-Coming soon!
+```sh
+cargo install tesohh-bricks
+```
 
 ## From source
 ```sh

@@ -4,7 +4,10 @@ use anyhow::Result;
 use home::home_dir;
 use serde::{Deserialize, Serialize};
 
-use super::overrides::{OverrideDatabase, Overrides};
+use super::{
+    overrides::{OverrideDatabase, Overrides},
+    platform::Platform,
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum LibKind {
@@ -21,9 +24,52 @@ pub struct Lib {
     pub version: Option<String>,
 
     pub overrides: Option<Overrides>,
+    //
+    // #[serde(default = "default_cflags")]
+    // pub cflags: String,
+    // #[serde(default = "default_ldflags")]
+    // pub ldflags: String,
+    //
+    // macos: Option<Platform>,
+    // windows: Option<Platform>,
+    // linux: Option<Platform>,
 }
 
 impl Lib {
+    // pub fn platform(&self) -> Option<&Platform> {
+    //     if cfg!(target_os = "linux") {
+    //         self.linux.as_ref()
+    //     } else if cfg!(target_os = "macos") {
+    //         self.macos.as_ref()
+    //     } else if cfg!(target_os = "windows") {
+    //         self.windows.as_ref()
+    //     } else {
+    //         None
+    //     }
+    // }
+    //
+    // pub fn cflags(&self) -> String {
+    //     let ext_cflags = &match self.platform() {
+    //         Some(platform) => match &platform.cflags {
+    //             Some(v) => v,
+    //             None => "",
+    //         },
+    //         None => "",
+    //     };
+    //     format!("{} {}", self.cflags, ext_cflags)
+    // }
+    //
+    // pub fn ldflags(&self) -> String {
+    //     let ext_ldflags = &match self.platform() {
+    //         Some(platform) => match &platform.ldflags {
+    //             Some(v) => v,
+    //             None => "",
+    //         },
+    //         None => "",
+    //     };
+    //     format!("{} {}", self.cflags, ext_ldflags)
+    // }
+
     pub fn headers(&self, name: &str, override_db: &OverrideDatabase) -> Result<String> {
         match self.kind {
             LibKind::System => {
@@ -162,14 +208,26 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn no_repo_should_return_none() {
-        let no_repo_lib = Lib {
+    fn basic_lib() -> Lib {
+        Lib {
             kind: LibKind::Git,
-            repo: None,
+            repo: Some("github.com/Tesohh/strings.git".to_string()),
             version: Some("2020".to_string()),
             overrides: None,
-        };
+
+            cflags: "".into(),
+            ldflags: "".into(),
+            macos: None,
+            windows: None,
+            linux: None,
+        }
+    }
+
+    #[test]
+    fn no_repo_should_return_none() {
+        let mut no_repo_lib = basic_lib();
+        no_repo_lib.repo = None;
+
         assert_eq!(no_repo_lib.normalize_repo(), None);
         assert_eq!(no_repo_lib.directify_repo(), None);
         assert!(no_repo_lib.pathify_repo().is_err());
@@ -177,12 +235,9 @@ mod tests {
 
     #[test]
     fn repo_normalization() {
-        let mut lib = Lib {
-            kind: LibKind::Git,
-            repo: Some("github.com/Tesohh/strings.git".to_string()),
-            version: Some("2020".to_string()),
-            overrides: None,
-        };
+        let mut lib = basic_lib();
+        lib.repo = Some("github.com/Tesohh/strings.git".to_string());
+
         assert_eq!(
             lib.normalize_repo(),
             Some("https://github.com/Tesohh/strings.git".into())
@@ -203,12 +258,7 @@ mod tests {
 
     #[test]
     fn repo_directification() {
-        let lib = Lib {
-            kind: LibKind::Git,
-            repo: Some("github.com/Tesohh/strings.git".to_string()),
-            version: Some("2020".to_string()),
-            overrides: None,
-        };
+        let lib = basic_lib();
 
         assert_eq!(
             lib.directify_repo(),
@@ -218,12 +268,7 @@ mod tests {
 
     #[test]
     fn repo_pathification() {
-        let lib = Lib {
-            kind: LibKind::Git,
-            repo: Some("github.com/Tesohh/strings.git".to_string()),
-            version: Some("2020".to_string()),
-            overrides: None,
-        };
+        let lib = basic_lib();
 
         let path = lib.pathify_repo().unwrap();
 
@@ -240,12 +285,7 @@ mod tests {
 
     #[test]
     fn git_headers_and_lib_links() {
-        let lib = Lib {
-            kind: LibKind::Git,
-            repo: Some("github.com/Tesohh/strings.git".to_string()),
-            version: Some("2020".to_string()),
-            overrides: None,
-        };
+        let lib = basic_lib();
         let override_db = OverrideDatabase::new();
         assert_eq!(
             lib.headers("strings", &override_db).unwrap(),
@@ -272,12 +312,7 @@ mod tests {
 
     #[test]
     fn overrides() {
-        let lib = Lib {
-            kind: LibKind::Git,
-            repo: Some("github.com/Tesohh/strings.git".to_string()),
-            version: Some("2020".to_string()),
-            overrides: None,
-        };
+        let lib = basic_lib();
         let mut override_db = OverrideDatabase::new();
         override_db.insert(
             "strings".into(),
@@ -315,4 +350,12 @@ mod tests {
                 + " -lstrings"
         );
     }
+}
+
+fn default_cflags() -> String {
+    "".into()
+}
+
+fn default_ldflags() -> String {
+    "".into()
 }

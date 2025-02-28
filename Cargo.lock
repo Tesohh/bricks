@@ -75,25 +75,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f68f53c83ab957f72c32642f3868eec03eb974d1fb82e453128456482613d36"
 
 [[package]]
-name = "bricks"
-version = "1.0.0"
-dependencies = [
- "anstyle",
- "anstyle-owo-colors",
- "anyhow",
- "clap",
- "clap_derive",
- "git2",
- "home",
- "owo-colors",
- "serde",
- "serde_json",
- "thiserror",
- "toml",
- "walkdir",
-]
-
-[[package]]
 name = "cc"
 version = "1.2.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -606,6 +587,25 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "tesohh-bricks"
+version = "1.0.0"
+dependencies = [
+ "anstyle",
+ "anstyle-owo-colors",
+ "anyhow",
+ "clap",
+ "clap_derive",
+ "git2",
+ "home",
+ "owo-colors",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "toml",
+ "walkdir",
 ]
 
 [[package]]

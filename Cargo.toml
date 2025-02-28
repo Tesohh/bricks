@@ -1,5 +1,5 @@
 [package]
-name = "bricks"
+name = "tesohh-bricks"
 authors = ["Tesohh <github.com/Tesohh>"]
 version = "1.0.0"
 edition = "2021"
@@ -9,6 +9,13 @@ documentation = "https://tesohh.github.io/bricks"
 homepage = "https://github.com/Tesohh/bricks"
 repository = "https://github.com/Tesohh/bricks"
 categories = ["command-line-utilities", "development-tools", "development-tools::build-utils"]
+
+[lib]
+name = "bricks"  # Keeps the internal crate name as "bricks"
+
+[[bin]]
+name = "bricks"  # Keeps the final binary name as "bricks"
+path = "src/bin/bricks.rs"
 
 [dependencies]
 anstyle = "1.0.10"

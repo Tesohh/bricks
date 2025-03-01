@@ -28,7 +28,8 @@ pub fn build(
 
         let mut cmd = match std::env::consts::OS {
             "windows" => {
-                let mut cmd = Command::new("cmd");
+                let mut cmd = Command::new("powershell.exe");
+                cmd.args(["-NoLogo", "-NonInteractive", "-NoProfile"]);
                 cmd.arg("/C");
                 cmd
             }

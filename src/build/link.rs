@@ -27,7 +27,6 @@ pub fn binary(
 
     let mut cmd = &mut Command::new(get_compiler());
     cmd = cmd.stderr(Stdio::inherit());
-    cmd.args(ldflags.split_whitespace().collect::<Vec<&str>>());
 
     for path in compile_paths {
         cmd = cmd.arg(path);
@@ -37,6 +36,8 @@ pub fn binary(
         cmd = cmd.args(lib.lib_links(name, override_db)?.split(" "));
         cmd = cmd.args(lib.headers(name, override_db)?.split(" "));
     }
+
+    cmd.args(ldflags.split_whitespace().collect::<Vec<&str>>());
 
     cmd = cmd.arg("-o").arg(target);
 
@@ -59,7 +60,6 @@ pub fn library(
 
     let mut cmd = &mut Command::new(get_archiver());
     cmd = cmd.stderr(Stdio::inherit()).arg("crus").arg(target);
-    cmd.args(ldflags.split_whitespace().collect::<Vec<&str>>());
 
     for path in compile_paths {
         cmd = cmd.arg(path);
@@ -69,6 +69,8 @@ pub fn library(
         cmd = cmd.args(lib.lib_links(name, override_db)?.split(" "));
         cmd = cmd.args(lib.headers(name, override_db)?.split(" "));
     }
+
+    cmd.args(ldflags.split_whitespace().collect::<Vec<&str>>());
 
     let _status = cmd.status()?;
 

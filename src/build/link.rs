@@ -27,7 +27,6 @@ pub fn binary(
 
     let mut cmd = &mut Command::new(get_compiler());
     cmd = cmd.stderr(Stdio::inherit());
-    dbg!(ldflags);
     cmd.args(ldflags.split_whitespace().collect::<Vec<&str>>());
 
     for path in compile_paths {

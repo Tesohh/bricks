@@ -122,8 +122,6 @@ pub fn compile(
         pretty::msg("compile", &src_path_name);
     }
 
-    dbg!(&cmd);
-
     let output = cmd.output()?;
 
     if !output.status.success() {

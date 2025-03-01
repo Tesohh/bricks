@@ -4,10 +4,7 @@ use anyhow::Result;
 use home::home_dir;
 use serde::{Deserialize, Serialize};
 
-use super::{
-    overrides::{OverrideDatabase, Overrides},
-    platform::Platform,
-};
+use super::overrides::{OverrideDatabase, Overrides};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum LibKind {
@@ -19,6 +16,7 @@ pub enum LibKind {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Lib {
+    #[serde(default = "default_kind")]
     pub kind: LibKind,
     pub repo: Option<String>,
     pub version: Option<String>,
@@ -352,10 +350,6 @@ mod tests {
     }
 }
 
-fn default_cflags() -> String {
-    "".into()
-}
-
-fn default_ldflags() -> String {
-    "".into()
+fn default_kind() -> LibKind {
+    LibKind::Git
 }

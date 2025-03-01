@@ -45,9 +45,11 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<O
             // else just open it
             let full_path = lib.pathify_repo_no_version()?.join("full");
             let repo: git2::Repository = if !fs::exists(&full_path)? {
+                pretty::info(format!("cloning {}", &repo_uri));
                 git2::Repository::clone(&repo_uri, &full_path)?
             } else {
                 let repo = git2::Repository::open(&full_path)?;
+                pretty::info(format!("fetching all {}", &repo_uri));
                 repo.fetch_all(&repo_uri)?;
                 repo
             };
@@ -57,6 +59,7 @@ pub fn install_lib(name: &str, lib: &Lib, force: bool, silent: bool) -> Result<O
                 return Err(LibPathificationError::VersionMissing.into());
             };
             repo.checkout(version)?;
+            pretty::info(format!("checked out to version {}", version));
 
             // copy the required version to another directory and use that
             copy_dir(&full_path, &versioned_path, &[".git"])?;

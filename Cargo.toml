@@ -1,7 +1,7 @@
 [package]
 name = "tesohh-bricks"
 authors = ["Tesohh <github.com/Tesohh>"]
-version = "1.0.0"
+version = "1.0.2"
 edition = "2021"
 description = "build system and package manager for C/C++"
 license-file = "LICENSE"

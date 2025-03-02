@@ -23,7 +23,7 @@ impl Display for BrickKind {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
 pub enum BrickLang {
     #[serde(alias = "c")]
     C,

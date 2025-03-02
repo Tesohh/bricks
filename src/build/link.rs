@@ -8,7 +8,7 @@ use anyhow::Result;
 
 use crate::{
     cli::pretty,
-    config::{lib::Lib, overrides::OverrideDatabase},
+    config::{brick::BrickLang, lib::Lib, overrides::OverrideDatabase},
 };
 
 use super::tools::{get_archiver, get_compiler};
@@ -19,13 +19,14 @@ pub fn binary(
     target: &Path,
     override_db: &OverrideDatabase,
     ldflags: &str,
+    lang: BrickLang,
     silent: bool,
 ) -> Result<Option<PathBuf>> {
     if !silent {
         pretty::msg("link", target.display());
     }
 
-    let mut cmd = &mut Command::new(get_compiler());
+    let mut cmd = &mut Command::new(get_compiler(lang));
     cmd = cmd.stderr(Stdio::inherit());
 
     for path in compile_paths {
@@ -52,6 +53,7 @@ pub fn library(
     target: &Path,
     override_db: &OverrideDatabase,
     ldflags: &str,
+    _lang: BrickLang,
     silent: bool,
 ) -> Result<Option<PathBuf>> {
     if !silent {

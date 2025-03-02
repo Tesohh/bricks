@@ -9,7 +9,7 @@ use walkdir::DirEntry;
 
 use crate::{
     cli::{commandext::CommandExt, pretty},
-    config::{overrides::OverrideDatabase, Config},
+    config::{brick::BrickLang, overrides::OverrideDatabase, Config},
 };
 
 use super::{compile_commands::CompileCommand, tools::get_compiler};
@@ -47,9 +47,14 @@ pub fn compile(
     }
 
     let src_path_name = file.path().to_string_lossy();
-    if !src_path_name.to_string().ends_with(".c") {
+    let c_skip =
+        matches!(config.brick.lang, BrickLang::C) && !src_path_name.to_string().ends_with(".c");
+    let cpp_skip =
+        matches!(config.brick.lang, BrickLang::CPP) && !src_path_name.to_string().ends_with(".cpp");
+
+    if c_skip || cpp_skip {
         return Ok(None);
-    };
+    }
 
     let build_path = src_to_build_path(file.path());
 
@@ -72,7 +77,7 @@ pub fn compile(
         None => "".to_string(),
     };
 
-    let mut cmd = Command::new(get_compiler());
+    let mut cmd = Command::new(get_compiler(config.brick.lang));
     cmd.arg(format!("-std={}", config.brick.edition))
         .args(cflags.split_whitespace())
         .arg("-c")

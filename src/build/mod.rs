@@ -100,6 +100,7 @@ pub fn build(
                 .join(&config.brick.name),
             &override_db,
             &ldflags,
+            config.brick.lang,
             build_command.silent,
         ),
         BrickKind::Library => link::library(
@@ -111,6 +112,7 @@ pub fn build(
                 .join(String::from("lib") + &config.brick.name + ".a"),
             &override_db,
             &ldflags,
+            config.brick.lang,
             build_command.silent,
         ),
     };

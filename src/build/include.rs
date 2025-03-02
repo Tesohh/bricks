@@ -32,7 +32,9 @@ pub fn copy_headers(src_path: impl AsRef<Path>, name: &str) -> Result<()> {
             continue;
         }
 
-        fs::copy(path, src_to_include_path(path, name))?;
+        let dest_path = src_to_include_path(path, name);
+        fs::create_dir_all(dest_path.parent().unwrap())?;
+        fs::copy(path, &dest_path)?;
     }
     Ok(())
 }

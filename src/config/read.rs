@@ -1,4 +1,4 @@
-use std::{fs, path::Path};
+use std::{fs, io::IsTerminal, path::Path};
 
 use anyhow::{bail, Result};
 use owo_colors::OwoColorize;
@@ -18,9 +18,8 @@ pub fn read_config(config_path: &Path) -> Result<Config> {
 
     let config: Config = toml::from_str(&toml_str)?;
 
-    pretty::msg(
-        "brick",
-        format!(
+    let msg = match std::io::stdout().is_terminal() {
+        true => format!(
             "{} {}",
             config.brick.name,
             format!(
@@ -29,7 +28,13 @@ pub fn read_config(config_path: &Path) -> Result<Config> {
             )
             .dimmed()
         ),
-    );
+        false => format!(
+            "{} ({}, {}, {})",
+            config.brick.name, config.brick.kind, config.brick.lang, config.brick.edition
+        ),
+    };
+
+    pretty::msg("brick", msg);
 
     Ok(config)
 }
